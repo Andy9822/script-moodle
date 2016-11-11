@@ -2,7 +2,11 @@
 import xlrd
 import os.path
 import tkinter.filedialog as filedialog
-
+from datetime import datetime
+import operator
+import matplotlib.pyplot as plt
+import numpy as np
+import matplotlib.pyplot as plt
 def xlread(arq_xls):
     # Abre o arquivo
     xls = xlrd.open_workbook(arq_xls)
@@ -51,7 +55,6 @@ def present_people(dic):
 
 def sorted_number_dic(dic):
     # Recebe o dicionary e retorna 2 listas people and number
-    import operator
     people=[]
     number=[]
     # Passa o dicionary para uma lista de tuplas e ordenada essa lista
@@ -60,10 +63,7 @@ def sorted_number_dic(dic):
     return people,number
 
 def plotgraph(people,number):
-    import matplotlib.pyplot as plt
     plt.rcdefaults()
-    import numpy as np
-    import matplotlib.pyplot as plt
 
     # Peoples e Number já estão atualizados e ordenados
     y_pos = np.arange(len(people))
@@ -77,7 +77,6 @@ def plotgraph(people,number):
 
 def convert_to_datetime(date_string):
     # Recebe uma Data em um String e converte para a class datetime
-    from datetime import datetime
     date_object = datetime.strptime(date_string,"%d/%m/%Y %H:%M")
     return date_object
 
@@ -85,7 +84,6 @@ def filter_days(log,first,last): # LEMBRAR: O FORMATO DEVE SER "DIAS/MES/ANO HOR
     # Recebe o log e dois dias, retorna o log entre esses dois dias INCLUSIVE esses dias
     log_filtered={}
     i=0
-    from datetime import datetime
     for x in log:
         if log[x].date >= first and log[x].date <= last:
             log_filtered[i]=log[x]
@@ -97,11 +95,11 @@ def filter_names(log,names):
     log_filtered = {}
     i=0
     # Para todo nome em NAMES verifica se ele esta no log, se estiver coloca em log_filtered
-    for y in names:
-        for x in log:
-            if log[x].name in names:
-                log_filtered[i]=log[x]
-                i=i+1
+    for x in log:
+        if log[x].name in names:
+            log_filtered[i]=log[x]
+            print (log_filtered[i].name)
+            i=i+1
     return log_filtered
 
 def create_and_plot_bar(log):
@@ -113,6 +111,24 @@ def create_and_plot_bar(log):
     plotgraph(people,number)
     return dic
 
+def load_log(file_):
+    # Recebe um arquivo EXCEL e retorna a log
+    if not file_:
+        return False
+    else:
+        print ("Carregando arquivo...")
+        # Inicia a lista
+        log={}
+        i=0
+        # Faz um for ignorando a primeira linha
+        for linha in xlread(file_):
+            if linha[0] != "Hora":
+                # Carrega as 9 características em 1 e vai para o próximo
+                log[i] = Champion(convert_to_datetime(linha[0]),linha[1],linha[2],linha[3],linha[4],linha[5],linha[6],linha[7],linha[8])
+                print (log[i].name)
+                i=1+i
+        print ("Carregamento concluido")
+        return log
 # You are a CHAMPION BRO
 class Champion:
     def __init__(self, date, name, affected, component, context, event, description, source, ip):
@@ -127,29 +143,15 @@ class Champion:
         self.ip = ip
 
 #------------------------------------------ main ---------------------------------------------#
-# Dicionario utilizado
-dic={}
 # Define uma constante para arquivo
-#arquivo =  filedialog.askopenfilename()
-arquivo = "C:\\Users\\leona\\Desktop\\Script\\script-moodle\\logs.xlsx"
-# Se não tiver arquivo só printa "Nenhum arquivo achado"
-if not arquivo:
-    print ("Nenhum arquivo achado")
+#file_ =  filedialog.askopenfilename()
+file_ = "C:\\Users\\leona\\Desktop\\Script\\script-moodle\\logs.xlsx"
+
+# Da load no arquivo e transforma em um dicionary com classe
+log=load_log(file_)
+if log == False:
+    print("Nenhum arquivo achado")
 else:
-    print ("Carregando arquivo...")
-    # Inicia a lista
-    log={}
-    i=0
-    # Faz um for ignorando a primeira linha
-    for linha in xlread(arquivo):
-        if linha[0] != "Hora":
-            # Carrega as 9 características em 1 e vai para o próximo
-            log[i] = Champion(convert_to_datetime(linha[0]),linha[1],linha[2],linha[3],linha[4],linha[5],linha[6],linha[7],linha[8])
-            print (log[i].date)
-            i=1+i
-    print ("Carregamento concluido")
-
-
     answer=True
     while answer:
         print ("""
@@ -158,7 +160,7 @@ else:
         3.
         0. Quit
         """)
-        answer = input ("What would you like to do ?  ")
+        answer = input ("        What would you like to do ?  ")
         if answer == '1':
             create_and_plot_bar(log)
         elif answer == '2':
@@ -167,13 +169,15 @@ else:
             2. Filter the days
             3. Filter both """)
             # Escolhe a opção e faz os if's
-            filtering = input ("What filter ?  ")
+            filtering = input ("""
+            What filter ?  """)
             if filtering == '1':
                 # Se for 1 vai fazer 1 laço pegando todos os nomes desejados a serem filtrados e plota o gráfico
                 naming = True
                 names=[]
                 while naming:
-                    names.append(input("Insert the name: "))
+                    names.append(input("""
+                    Insert the name: """))
                     naming=input("""
                     1. One more time
                     0. Leave
@@ -185,7 +189,8 @@ else:
                 create_and_plot_bar(log_filtered)
             elif filtering == '2':
                 # Se for 2 vai filtrar o log entre as 2 datas dada
-                print ("Format: DAY/MONTH/YEAR HOUR:MINUTES")
+                print ("""
+                Format: DAY/MONTH/YEAR HOUR:MINUTES""")
                 first=convert_to_datetime(str(input("First Day ")))
                 last=convert_to_datetime(str(input("Last Day ")))
                 # Filtra o log
@@ -196,7 +201,8 @@ else:
                 naming = True
                 names=[]
                 while naming:
-                    names.append(input("Insert the name: "))
+                    names.append(input("""
+                    Insert the name: """))
                     naming=input("""
                     1. One more time
                     0. Leave
@@ -206,18 +212,25 @@ else:
                 # Filtra o log com os nomes
                 log_filtered=filter_names(log,names)
                 # Filtro de dias
-                print ("Format: DAY/MONTH/YEAR HOUR:MINUTES")
+                print ("      Format: DAY/MONTH/YEAR HOUR:MINUTES")
                 first=convert_to_datetime(str(input("First Day ")))
                 last=convert_to_datetime(str(input("Last Day ")))
                 # Filtra o log filtrado por nomes com dias agora
                 log_filtered=filter_days(log_filtered,first,last)
                 create_and_plot_bar(log_filtered)
+                filtering = False
             else:
                 # Se digitar outra opção diz que não encontrou
-                print ("Opção não encontrada")
+                print ("""
+                Option not found
+                """)
+        elif answer == '0':
+            answer = False
         else:
             # Se digitar outra opção diz que não encontrou
-            print ("Opção não encontrada")
+            print ("""
+            Option not found
+            """)
 
 
 
