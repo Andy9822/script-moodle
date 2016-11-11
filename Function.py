@@ -50,6 +50,11 @@ def present_people(dic):
         ppl.append(key)
     return ppl
 
+def sort_dic(dic):
+    for w in sorted(dic,key=dic.get, reverse=True):
+        dic_sorted=dic[w]
+    return dic_sorted
+
 # You are a CHAMPION BRO
 class Champion:
     def __init__(self, date, name, affected, component, context, event, description, source, ip):
@@ -86,15 +91,17 @@ else:
     print ("Carregamento concluido")
     dic=create_dic(log)
 
+from operator import itemgetter
+from collections import OrderedDict
 
 #--------------------------------------------- PLOT GRAPH ------------------------------------#
 import matplotlib.pyplot as plt
 plt.rcdefaults()
 import numpy as np
 import matplotlib.pyplot as plt
-
+print (sort_dic(dic))
 # Example data
-people = present_people(dic)
+people = sort_dic(dic)
 y_pos = np.arange(len(people))
 performance=[]
 for x in dic:
