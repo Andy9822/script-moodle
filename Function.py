@@ -50,10 +50,16 @@ def present_people(dic):
         ppl.append(key)
     return ppl
 
-def sort_dic(dic):
-    for w in sorted(dic,key=dic.get, reverse=True):
-        dic_sorted=dic[w]
-    return dic_sorted
+def sorted_pseud_dic(dic):
+    # Recebe o dicionary e retorna 2 listas people and number
+    import operator
+    people=[]
+    number=[]
+    # Passa o dicionary para uma lista de tuplas e ordenada essa lista
+    sorted_ = sorted(dic.items(), key = operator.itemgetter(1))
+
+    people,number=zip(*sorted_)
+    return people,number
 
 # You are a CHAMPION BRO
 class Champion:
@@ -89,10 +95,10 @@ else:
             print (log[i].name)
             i=1+i
     print ("Carregamento concluido")
+    # Cria o dicionary
     dic=create_dic(log)
-
-from operator import itemgetter
-from collections import OrderedDict
+    # Inicializa as variaveis para ordenar o dicionary
+    people,number=sorted_pseud_dic(dic)
 
 #--------------------------------------------- PLOT GRAPH ------------------------------------#
 import matplotlib.pyplot as plt
@@ -100,14 +106,10 @@ plt.rcdefaults()
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Example data
-people = present_people(dic)
+# Peoples e Number já estão atualizados e ordenados
 y_pos = np.arange(len(people))
-performance=[]
-for x in dic:
-    performance.append(dic[x])
-
-plt.barh(y_pos, performance, align='center', alpha=0.5)
+# Number = os numeros de cada people 
+plt.barh(y_pos, number, align='center', alpha=0.5)
 plt.yticks(y_pos, people)
 plt.xlabel('Perguntas')
 plt.title('Quantia de visitas ao fórum')
