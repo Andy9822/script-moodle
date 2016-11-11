@@ -15,13 +15,15 @@ def xlread(arq_xls):
         yield plan.row_values(i)
 
 def rangerows(arq_xls):
-        # Abre o arquivo
-        xls = xlrd.open_workbook(arq_xls)
-        # Pega a primeira planilha do arquivo
-        plan = xls.sheets()[0]
-        return plan.nrows
+    # Retorna o numero de linhas de um arquivo EXCEL
+    # Abre o arquivo
+    xls = xlrd.open_workbook(arq_xls)
+    # Pega a primeira planilha do arquivo
+    plan = xls.sheets()[0]
+    return plan.nrows
 
 def how_many_post(log,name):
+    # Retorna o numero de "aparições" de "a"
     a=0
     i=0
     # Verifica linha por linha se tem alguém com o mesmo nome, se tiver acrescenta no valor a ser devolvido
@@ -32,6 +34,7 @@ def how_many_post(log,name):
     return a
 
 def create_dic(log):
+    # Cria um dicionario com "Nome da pessoa" : "Quantos visualizaçoes"
     dic={}
     i=0
     for linha in xlread(arquivo):
@@ -60,6 +63,7 @@ class Champion:
         self.source = source
         self.ip = ip
 
+#------------------------------------------ main ---------------------------------------------#
 # Dicionario utilizado
 dic={}
 # Define uma constante para arquivo
@@ -70,8 +74,6 @@ if not arquivo:
     print ("Nenhum arquivo achado")
 else:
     print ("Carregando arquivo...")
-    # Salva o limite de linhas do arquivo
-    limit = rangerows(arquivo)
     # Inicia a lista
     log={}
     i=0
@@ -85,6 +87,7 @@ else:
     dic=create_dic(log)
 
 
+#--------------------------------------------- PLOT GRAPH ------------------------------------#
 import matplotlib.pyplot as plt
 plt.rcdefaults()
 import numpy as np
@@ -97,7 +100,7 @@ performance=[]
 for x in dic:
     performance.append(dic[x])
 
-plt.barh(y_pos, performance, align='center', alpha=0.4)
+plt.barh(y_pos, performance, align='center', alpha=0.5)
 plt.yticks(y_pos, people)
 plt.xlabel('Perguntas')
 plt.title('Quantia de visitas ao fórum')
