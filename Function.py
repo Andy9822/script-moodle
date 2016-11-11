@@ -99,9 +99,9 @@ import matplotlib.pyplot as plt
 plt.rcdefaults()
 import numpy as np
 import matplotlib.pyplot as plt
-print (sort_dic(dic))
+
 # Example data
-people = sort_dic(dic)
+people = present_people(dic)
 y_pos = np.arange(len(people))
 performance=[]
 for x in dic:
