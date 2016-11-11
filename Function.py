@@ -26,7 +26,7 @@ def how_many_post(log,name):
     i=0
     # Verifica linha por linha se tem alguém com o mesmo nome, se tiver acrescenta no valor a ser devolvido
     for linha in xlread(arquivo):
-        if log[i][0].name == name:
+        if log[i].name == name:
             a=a+1
         i=i+1
     return a
@@ -35,8 +35,8 @@ def create_dic(log):
     dic={}
     i=0
     for linha in xlread(arquivo):
-        if not log[i][0].name in dic:
-            dic[log[i][0].name] = how_many_post(log,log[i][0].name)
+        if not log[i].name in dic:
+            dic[log[i].name] = how_many_post(log,log[i].name)
         i=i+1
     return dic
 
@@ -64,7 +64,7 @@ class Champion:
 dic={}
 # Define uma constante para arquivo
 #arquivo =  filedialog.askopenfilename()
-arquivo = "C:\\Users\\leona\\Desktop\\logs.xlsx"
+arquivo = "C:\\Users\\leona\\Desktop\\Script\\script-moodle\\logs.xlsx"
 # Se não tiver arquivo só printa "Nenhum arquivo achado"
 if not arquivo:
     print ("Nenhum arquivo achado")
@@ -78,8 +78,8 @@ else:
     # For para inserir as 9 categorias de cada um na lista
     for linha in xlread(arquivo):
             # Carrega as 9 características em 1 e vai para o próximo
-            log[i] = [Champion(linha[0],linha[1],linha[2],linha[3],linha[4],linha[5],linha[6],linha[7],linha[8])]
-            print (log[i][0].name)
+            log[i] = Champion(linha[0],linha[1],linha[2],linha[3],linha[4],linha[5],linha[6],linha[7],linha[8])
+            print (log[i].name)
             i=1+i
     print ("Carregamento concluido")
     dic=create_dic(log)
