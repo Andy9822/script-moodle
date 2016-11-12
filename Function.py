@@ -56,7 +56,6 @@ def filter_names(log,names):
     for x in log:
         if log[x].name in names:
             log_filtered[i]=log[x]
-            print(log_filtered[i].name)
             i=i+1
     return log_filtered
 
@@ -79,6 +78,7 @@ def create_dic_name_number(log):
     return dic
 
 def create_dic_days_number(log):
+    "NÃO ESTÁ SENDO USADO"
     # Cria um dicionario com "Dia" : "Quantidade de acessos"
     dic = {}
     for linha in log:
@@ -151,10 +151,10 @@ def plotgraph_bar(people,number):
 
 def convert_to_datetime(date_string):
     # Recebe uma Data em um String e converte para a class datetime
-    date_object = datetime.strptime(date_string,"%d/%m/%Y %H:%M")
+    date_object = datetime.strptime(date_string,"%d/%m/%Y").date()
     return date_object
 
-def load_log_bar(file_):
+def load_log(file_):
     # Recebe um arquivo EXCEL e retorna a log
     if not file_:
         return False
@@ -167,28 +167,14 @@ def load_log_bar(file_):
         for linha in xlread(file_):
             if linha[0] != "Hora":
                 # Carrega as 9 características em 1 e vai para o próximo
-                log[i] = Champion(convert_to_datetime(linha[0]),linha[1],linha[2],linha[3],linha[4],linha[5],linha[6],linha[7],linha[8])
+                # Separa a data em DATA[0] HORA[1]
+                data_splited=(linha[0].split(' '))
+                # Converte a data separada para datetime
+                log[i] = Champion(convert_to_datetime(data_splited[0]),linha[1],linha[2],linha[3],linha[4],linha[5],linha[6],linha[7],linha[8])
                 i=1+i
         print ("Carregamento concluido")
         return log
 
-def load_log_lines(file_):
-    # Recebe um arquivo EXCEL e retorna a log
-    if not file_:
-        return False
-    else:
-        print ("Carregando arquivo...")
-        # Inicia a lista
-        log={}
-        i=0
-        # Faz um for ignorando a primeira linha
-        for linha in xlread(file_):
-            if linha[0] != "Hora":
-                # Carrega as 9 características em 1 e vai para o próximo
-                log[i] = Champion(linha[0][:10],linha[1],linha[2],linha[3],linha[4],linha[5],linha[6],linha[7],linha[8])
-                i=i+1
-        print ("Carregamento concluido")
-        return log
 
 # You are a CHAMPION BRO
 class Champion:
@@ -211,6 +197,7 @@ file_ = "C:\\Users\\leona\\Desktop\\Script\\script-moodle\\logs.xlsx"
 if file_ == False:
     print("Nenhum arquivo achado")
 else:
+    log=load_log(file_)
     type_graph=True
     while type_graph:
         print("""
@@ -221,8 +208,6 @@ else:
         """)
         type_graph = input("        Your type: ")
         if type_graph == '1':
-            # Carrega o log no tipo para BAR
-            log=load_log_bar(file_)
             answer=True
             while answer:
                 print ("""
@@ -310,8 +295,6 @@ else:
                 # Para sempre voltar para a escolha de GRAPH's
                 answer = False
         elif type_graph == '2':
-            # Carrega o tipo de log para LINES
-            log=load_log_lines(file_)
             # Plota o grafico
             create_and_plot_days(log)
         if type_graph == '0':
