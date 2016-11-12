@@ -12,6 +12,7 @@ import matplotlib.ticker as ticker
 import matplotlib.cbook as cbook
 from matplotlib.mlab import csv2rec
 from matplotlib.cbook import get_sample_data
+import re
 
 def xlread(arq_xls):
     # Abre o arquivo
@@ -240,6 +241,13 @@ def load_log(file_):
         print ("Carregamento concluido")
         return log
 
+def is_date(string):
+    # Recebe um string e verifica se está no formato date compatível
+    format_= re.compile('.{2}/.{2}/.{4}')
+    if format_.match(string):
+        return True
+    else:
+        False
 
 # You are a CHAMPION BRO
 class Champion:
@@ -253,6 +261,69 @@ class Champion:
         self.description = description
         self.source = source
         self.ip = ip
+#---------------------------------------FUNCTIONS MENU----------------------------------------#
+def menu_print_options_graph():
+    print("""
+    Choose the GRAPH
+    1. Bars
+    2. Lines
+    0. Exit
+    """)
+
+def menu_prints_options_with_or_without():
+    print ("""
+    1. Plot without filter
+    2. Plot a graph with filter
+    3.
+    0. Quit
+    """)
+
+def menu_prints_options_filter():
+    print("""
+    1. Filter the people
+    2. Filter the days
+    3. Filter both """)
+
+def menu_filter_names(log):
+    naming = True
+    names=[]
+    while naming:
+        names.append(input("""
+        Insert the name: """))
+        naming=input("""
+        1. One more time
+        0. Leave
+        Continue? """)
+        if naming == '0':
+            naming=False
+    # Filtra o log com os nomes
+    log_filtered=filter_names(log,names)
+    return log_filtered
+
+def menu_filter_days(log):
+    inserindo=True
+    while inserindo:
+        print ("""
+        Format: DAY/MONTH/YEAR HOUR:MINUTES""")
+        # Recebe os dois strings
+        first=str(input("        First Day "))
+        last=str(input("        Last Day "))
+        # Testa se são do formato desejado, caso não continua no loop
+        if is_date(first) and is_date(last):
+            first=convert_to_datetime(first)
+            last=convert_to_datetime(last)
+            inserindo=False
+        else:
+            print("""
+            Alguma data foi no formato errado""")
+    # Filtra o log
+    log_filtered=filter_days(log,first,last)
+    return log_filtered
+
+def menu_filter_days_names(log):
+    log_filtered=menu_filter_days(log)
+    log_filtered=menu_filter_names(log_filtered)
+    return log_filtered
 
 #------------------------------------------ MENU ---------------------------------------------#
 # Define uma constante para arquivo
@@ -264,31 +335,18 @@ else:
     log=load_log(file_)
     type_graph=True
     while type_graph:
-        print("""
-        Choose the GRAPH
-        1. Bars
-        2. Lines
-        0. Exit
-        """)
+        print_options_graph()
         type_graph = input("        Your type: ")
         if type_graph == '1':
             answer=True
             while answer:
-                print ("""
-                1. Plot without filter
-                2. Plot a graph with filter
-                3.
-                0. Quit
-                """)
+                prints_options_with_or_without() # 1 - Sem Filtro 2 - Com Filtro
                 answer = input ("        What would you like to do ?  ")
                 if answer == '1':
                     # Plota o gráfico
                     create_and_plot_names(log)
                 elif answer == '2':
-                    print("""
-                    1. Filter the people
-                    2. Filter the days
-                    3. Filter both """)
+                    prints_options_filter()
                     # Escolhe a opção e faz os if's
                     filtering = input ("""
                     What filter ?  """)
@@ -311,10 +369,21 @@ else:
                         create_and_plot_names(log_filtered)
                     elif filtering == '2':
                         # Se for 2 vai filtrar o log entre as 2 datas dada
-                        print ("""
-                        Format: DAY/MONTH/YEAR HOUR:MINUTES""")
-                        first=convert_to_datetime(str(input("First Day ")))
-                        last=convert_to_datetime(str(input("Last Day ")))
+                        inserindo=True
+                        while inserindo:
+                            print ("""
+                            Format: DAY/MONTH/YEAR HOUR:MINUTES""")
+                            # Recebe os dois strings
+                            first=str(input("        First Day "))
+                            last=str(input("        Last Day "))
+                            # Testa se são do formato desejado, caso não continua no loop
+                            if is_date(first) and is_date(last):
+                                first=convert_to_datetime(first)
+                                last=convert_to_datetime(last)
+                                inserindo=False
+                            else:
+                                print("""
+                                Alguma data foi no formato errado""")
                         # Filtra o log
                         log_filtered=filter_days(log,first,last)
                         # Plota o gráfico
@@ -335,9 +404,21 @@ else:
                         # Filtra o log com os nomes
                         log_filtered=filter_names(log,names)
                         # Filtro de dias
-                        print ("      Format: DAY/MONTH/YEAR HOUR:MINUTES")
-                        first=convert_to_datetime(str(input("First Day ")))
-                        last=convert_to_datetime(str(input("Last Day ")))
+                        inserindo=True
+                        while inserindo:
+                            print ("""
+                            Format: DAY/MONTH/YEAR HOUR:MINUTES""")
+                            # Recebe os dois strings
+                            first=str(input("        First Day "))
+                            last=str(input("        Last Day "))
+                            # Testa se são do formato desejado, caso não continua no loop
+                            if is_date(first) and is_date(last):
+                                first=convert_to_datetime(first)
+                                last=convert_to_datetime(last)
+                                inserindo=False
+                            else:
+                                print("""
+                                Alguma data foi no formato errado""")
                         # Filtra o log filtrado por nomes com dias agora
                         log_filtered=filter_days(log_filtered,first,last)
                         # Plota o gráfico
@@ -361,21 +442,13 @@ else:
         elif type_graph == '2':
             answer=True
             while answer:
-                print ("""
-                1. Plot without filter
-                2. Plot a graph with filter
-                3.
-                0. Quit
-                """)
+                prints_options_with_or_without()
                 answer = input ("        What would you like to do ?  ")
                 if answer == '1':
                     # Plota o gráfico
                     create_and_plot_days(log_filtered,[])
                 elif answer == '2':
-                    print("""
-                    1. Filter the people
-                    2. Filter the days
-                    3. Filter both """)
+                    prints_options_filter()
                     # Escolhe a opção e faz os if's
                     filtering = input ("""
                     What filter ?  """)
@@ -399,7 +472,7 @@ else:
                     elif filtering == '2':
                         # Se for 2 vai filtrar o log entre as 2 datas dada
                         print ("""
-                        Format: DAY/MONTH/YEAR HOUR:MINUTES""")
+                        Format: DAY/MONTH/YEAR""")
                         first=convert_to_datetime(str(input("First Day ")))
                         last=convert_to_datetime(str(input("Last Day ")))
                         # Filtra o log
@@ -422,7 +495,7 @@ else:
                         # Filtra o log com os nomes
                         log_filtered=filter_names(log,names)
                         # Filtro de dias
-                        print ("      Format: DAY/MONTH/YEAR HOUR:MINUTES")
+                        print ("      Format: DAY/MONTH/YEAR")
                         first=convert_to_datetime(str(input("First Day ")))
                         last=convert_to_datetime(str(input("Last Day ")))
                         # Filtra o log filtrado por nomes com dias agora
