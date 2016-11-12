@@ -97,6 +97,8 @@ def create_and_plot_names(log):
 def create_and_plot_days(log):
     # Cria um dicionary e plota o gráfico em linhas (bom para saber por dias)
     days,numbers = create_list(log)
+    days.reverse()
+    numbers.reverse()
     # Seta o X e Y para arrays de numeros
     x = np.array(range(len(days)))
     y = np.array(numbers)
