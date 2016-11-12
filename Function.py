@@ -9,6 +9,7 @@ import operator
 import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.ticker as ticker
+import matplotlib.cbook as cbook
 from matplotlib.mlab import csv2rec
 from matplotlib.cbook import get_sample_data
 
@@ -46,6 +47,16 @@ def how_visua_day(log,day):
     for linha in log:
         if log[linha].date == day:
             a=a+1
+    return a
+
+def how_visua_day_name(log,day,name):
+    # Retorna quantos acessos ocorreu no Dia
+    a=0
+    #Verifica linha por linha se o dia foi acessado por aquela pessoa, se for acrescenta 1
+    for linha in log:
+        if log[linha].date == day:
+            if log[linha].name == name:
+                a=a+1
     return a
 
 def filter_names(log,names):
@@ -96,20 +107,73 @@ def create_and_plot_names(log):
     plotgraph_bar(people,number)
     return dic
 
-def create_and_plot_days(log):
-    # Cria um dicionary e plota o gráfico em linhas (bom para saber por dias)
+def create_and_plot_days(log,names):
+    # Plota o gráfico em linhas (bom para saber por dias)
+    # Recebe o log e divide em 2 listas
+    if not names:
+        days,numbers = create_list(log)
+        # Inverte as listas para ficar em ordem crescente
+        days.reverse()
+        numbers.reverse()
+        # Seta o X e Y para arrays de numeros
+        x = np.array(range(len(days)))
+        y = np.array(numbers)
+        # Pega as datas para colocar em baixo
+        my_xticks = days
+        plt.xticks(np.arange(min(x), max(x)+1,1.0),my_xticks, rotation=90)
+        plt.ylabel('Número de acessos')
+        plt.title('Todas as pessoas no log')
+        with plt.style.context('fivethirtyeight'):
+            plt.plot(x,y)
+            plt.show()
+    else:
+        # Se tiver algo no names
+        people=[]
+        # Vai fazer uma lista de listas com Pessoa[dias,numeros]
+        for x in names:
+            numbers=[]
+            days=[]
+            for y in log:
+                if not log[y].date in days:
+                    # Faz uma lista de numeros acessados naquele dia pelo "x"
+                    numbers.append(how_visua_day_name(log,log[y].date,x))
+                    # Faz uma lista de datas
+                    days.append(log[y].date)
+            # Juntas as duas listas em 1 pessoa
+            people.append([days,numbers])
+            # People [x][0] = Dates People [x][1] = Acessos no dia
+        for i in range(len(names)):
+            # Vai plotar um gráfico para cada pessoa do names
+            numbers=[]
+            days=[]
+            days = people[i][0]
+            numbers = people[i][1]
+            print(days)
+            print(numbers)
+            days.reverse()
+            numbers.reverse()
+            # Seta o X e Y para arrays de numeros
+            x = np.array(range(len(days)))
+            y = np.array(numbers)
+            # Pega as datas para colocar em baixo
+            my_xticks = days
+            plt.xticks(np.arange(min(x), max(x)+1,1.0),my_xticks, rotation=90)
+            plt.ylabel('Número de acessos')
+            plt.title(names[i])
+            plt.plot(x,y)
+        # Vai mostrar o que foi plotado
+        plt.show()
+
+
+def create_and_plot_days_with_names(log):
+    # Cria um gráfico com várias linhas e cada uma representa uma pessoas
     days,numbers = create_list(log)
-    days.reverse()
-    numbers.reverse()
-    # Seta o X e Y para arrays de numeros
-    x = np.array(range(len(days)))
-    y = np.array(numbers)
-    # Pega as strings para colocar em baixo
-    my_xticks = days
-    # np.arange(min... )6.0 6.0 = espaço
-    plt.xticks(np.arange(min(x), max(x)+1,1.0),my_xticks, rotation=90)
-    plt.plot(x,y)
-    plt.show()
+    x = np.linspace(0, 10)
+    with plt.style.context('fivethirtyeight'):
+        fname = cbook.get_sample_data('msft.csv', asfileobj=False)
+        # test 5; single subplot
+        plt.plotfile(fname, ('date', 'open', 'high', 'low', 'close'), subplots=True)
+        plt.show()
 
 def create_list(log):
     # Recebe um log e cria duas listas com seus dias e seus acessos respectivos no mesmo indice
@@ -151,6 +215,7 @@ def plotgraph_bar(people,number):
 
 def convert_to_datetime(date_string):
     # Recebe uma Data em um String e converte para a class datetime
+    # Recebe apenas a data com o comando. date
     date_object = datetime.strptime(date_string,"%d/%m/%Y").date()
     return date_object
 
@@ -193,7 +258,6 @@ class Champion:
 # Define uma constante para arquivo
 #file_ =  filedialog.askopenfilename()
 file_ = "C:\\Users\\leona\\Desktop\\Script\\script-moodle\\logs.xlsx"
-
 if file_ == False:
     print("Nenhum arquivo achado")
 else:
@@ -295,8 +359,92 @@ else:
                 # Para sempre voltar para a escolha de GRAPH's
                 answer = False
         elif type_graph == '2':
-            # Plota o grafico
-            create_and_plot_days(log)
+            answer=True
+            while answer:
+                print ("""
+                1. Plot without filter
+                2. Plot a graph with filter
+                3.
+                0. Quit
+                """)
+                answer = input ("        What would you like to do ?  ")
+                if answer == '1':
+                    # Plota o gráfico
+                    create_and_plot_days(log_filtered,[])
+                elif answer == '2':
+                    print("""
+                    1. Filter the people
+                    2. Filter the days
+                    3. Filter both """)
+                    # Escolhe a opção e faz os if's
+                    filtering = input ("""
+                    What filter ?  """)
+                    if filtering == '1':
+                        # Se for 1 vai fazer 1 laço pegando todos os nomes desejados a serem filtrados e plota o gráfico
+                        naming = True
+                        names=[]
+                        while naming:
+                            names.append(input("""
+                            Insert the name: """))
+                            naming=input("""
+                            1. One more time
+                            0. Leave
+                            Continue? """)
+                            if naming == '0':
+                                naming=False
+                        # Filtra o log com os nomes
+                        log_filtered=filter_names(log,names)
+                        # Plota o gráfico
+                        create_and_plot_days(log_filtered,names)
+                    elif filtering == '2':
+                        # Se for 2 vai filtrar o log entre as 2 datas dada
+                        print ("""
+                        Format: DAY/MONTH/YEAR HOUR:MINUTES""")
+                        first=convert_to_datetime(str(input("First Day ")))
+                        last=convert_to_datetime(str(input("Last Day ")))
+                        # Filtra o log
+                        log_filtered=filter_days(log,first,last)
+                        # Plota o gráfico
+                        create_and_plot_days(log_filtered,[])
+                    elif filtering == '3':
+                        # Se for 3 faz os dois filtros e junta no final
+                        naming = True
+                        names=[]
+                        while naming:
+                            names.append(input("""
+                            Insert the name: """))
+                            naming=input("""
+                            1. One more time
+                            0. Leave
+                            Continue? """)
+                            if naming == '0':
+                                naming=False
+                        # Filtra o log com os nomes
+                        log_filtered=filter_names(log,names)
+                        # Filtro de dias
+                        print ("      Format: DAY/MONTH/YEAR HOUR:MINUTES")
+                        first=convert_to_datetime(str(input("First Day ")))
+                        last=convert_to_datetime(str(input("Last Day ")))
+                        # Filtra o log filtrado por nomes com dias agora
+                        log_filtered=filter_days(log_filtered,first,last)
+                        # Plota o gráfico
+                        create_and_plot_days(log_filtered,names)
+                        filtering = False
+                    else:
+                        # Se digitar outra opção diz que não encontrou
+                        print ("""
+                        Option not found
+                        """)
+                elif answer == '0':
+                    # Se a resposta for sair, type_graph vai receber False e lá em baixo answer já recebe False
+                    type_graph = False
+                else:
+                    # Se digitar outra opção diz que não encontrou
+                    print ("""
+                    Option not found
+                    """)
+                # Para sempre voltar para a escolha de GRAPH's
+                answer = False
         if type_graph == '0':
             # Sai do programa
             type_graph = False
