@@ -98,7 +98,7 @@ def create_dic_days_number(log):
             dic[log[linha].date]= how_visua_day(log,log[linha].date)
     return dic
 
-def create_and_plot_names(log):
+def create_and_plot_bar(log):
     # Cria o dicionary e plota o grafico em forma de barras (bom para saber por pessoa)
     # Cria o dicionary
     dic=create_dic_name_number(log)
@@ -108,7 +108,7 @@ def create_and_plot_names(log):
     plotgraph_bar(people,number)
     return dic
 
-def create_and_plot_days(log,names):
+def create_and_plot_lines(log,names):
     # Plota o gráfico em linhas (bom para saber por dias)
     # Recebe o log e divide em 2 listas
     if not names:
@@ -149,8 +149,6 @@ def create_and_plot_days(log,names):
             days=[]
             days = people[i][0]
             numbers = people[i][1]
-            print(days)
-            print(numbers)
             days.reverse()
             numbers.reverse()
             # Seta o X e Y para arrays de numeros
@@ -165,7 +163,6 @@ def create_and_plot_days(log,names):
         # Vai mostrar o que foi plotado
         plt.show()
 
-
 def create_and_plot_days_with_names(log):
     # Cria um gráfico com várias linhas e cada uma representa uma pessoas
     days,numbers = create_list(log)
@@ -174,7 +171,7 @@ def create_and_plot_days_with_names(log):
         fname = cbook.get_sample_data('msft.csv', asfileobj=False)
         # test 5; single subplot
         plt.plotfile(fname, ('date', 'open', 'high', 'low', 'close'), subplots=True)
-        plt.show()
+        plt.show() # USO FUTURO
 
 def create_list(log):
     # Recebe um log e cria duas listas com seus dias e seus acessos respectivos no mesmo indice
@@ -267,15 +264,13 @@ def menu_print_options_graph():
     Choose the GRAPH
     1. Bars
     2. Lines
-    0. Exit
     """)
 
 def menu_prints_options_with_or_without():
     print ("""
     1. Plot without filter
     2. Plot a graph with filter
-    3.
-    0. Quit
+    0. Exit
     """)
 
 def menu_prints_options_filter():
@@ -298,7 +293,7 @@ def menu_filter_names(log):
             naming=False
     # Filtra o log com os nomes
     log_filtered=filter_names(log,names)
-    return log_filtered
+    return log_filtered,names
 
 def menu_filter_days(log):
     inserindo=True
@@ -321,9 +316,10 @@ def menu_filter_days(log):
     return log_filtered
 
 def menu_filter_days_names(log):
+    names=[]
     log_filtered=menu_filter_days(log)
-    log_filtered=menu_filter_names(log_filtered)
-    return log_filtered
+    log_filtered,names=menu_filter_names(log_filtered)
+    return log_filtered,names
 
 #------------------------------------------ MENU ---------------------------------------------#
 # Define uma constante para arquivo
@@ -333,192 +329,46 @@ if file_ == False:
     print("Nenhum arquivo achado")
 else:
     log=load_log(file_)
-    type_graph=True
-    while type_graph:
-        print_options_graph()
-        type_graph = input("        Your type: ")
-        if type_graph == '1':
-            answer=True
-            while answer:
-                prints_options_with_or_without() # 1 - Sem Filtro 2 - Com Filtro
-                answer = input ("        What would you like to do ?  ")
-                if answer == '1':
-                    # Plota o gráfico
-                    create_and_plot_names(log)
-                elif answer == '2':
-                    prints_options_filter()
-                    # Escolhe a opção e faz os if's
-                    filtering = input ("""
-                    What filter ?  """)
-                    if filtering == '1':
-                        # Se for 1 vai fazer 1 laço pegando todos os nomes desejados a serem filtrados e plota o gráfico
-                        naming = True
-                        names=[]
-                        while naming:
-                            names.append(input("""
-                            Insert the name: """))
-                            naming=input("""
-                            1. One more time
-                            0. Leave
-                            Continue? """)
-                            if naming == '0':
-                                naming=False
-                        # Filtra o log com os nomes
-                        log_filtered=filter_names(log,names)
-                        # Plota o gráfico
-                        create_and_plot_names(log_filtered)
-                    elif filtering == '2':
-                        # Se for 2 vai filtrar o log entre as 2 datas dada
-                        inserindo=True
-                        while inserindo:
-                            print ("""
-                            Format: DAY/MONTH/YEAR HOUR:MINUTES""")
-                            # Recebe os dois strings
-                            first=str(input("        First Day "))
-                            last=str(input("        Last Day "))
-                            # Testa se são do formato desejado, caso não continua no loop
-                            if is_date(first) and is_date(last):
-                                first=convert_to_datetime(first)
-                                last=convert_to_datetime(last)
-                                inserindo=False
-                            else:
-                                print("""
-                                Alguma data foi no formato errado""")
-                        # Filtra o log
-                        log_filtered=filter_days(log,first,last)
-                        # Plota o gráfico
-                        create_and_plot_names(log_filtered)
-                    elif filtering == '3':
-                        # Se for 3 faz os dois filtros e junta no final
-                        naming = True
-                        names=[]
-                        while naming:
-                            names.append(input("""
-                            Insert the name: """))
-                            naming=input("""
-                            1. One more time
-                            0. Leave
-                            Continue? """)
-                            if naming == '0':
-                                naming=False
-                        # Filtra o log com os nomes
-                        log_filtered=filter_names(log,names)
-                        # Filtro de dias
-                        inserindo=True
-                        while inserindo:
-                            print ("""
-                            Format: DAY/MONTH/YEAR HOUR:MINUTES""")
-                            # Recebe os dois strings
-                            first=str(input("        First Day "))
-                            last=str(input("        Last Day "))
-                            # Testa se são do formato desejado, caso não continua no loop
-                            if is_date(first) and is_date(last):
-                                first=convert_to_datetime(first)
-                                last=convert_to_datetime(last)
-                                inserindo=False
-                            else:
-                                print("""
-                                Alguma data foi no formato errado""")
-                        # Filtra o log filtrado por nomes com dias agora
-                        log_filtered=filter_days(log_filtered,first,last)
-                        # Plota o gráfico
-                        create_and_plot_names(log_filtered)
-                        filtering = False
-                    else:
-                        # Se digitar outra opção diz que não encontrou
-                        print ("""
-                        Option not found
-                        """)
-                elif answer == '0':
-                    # Se a resposta for sair, type_graph vai receber False e lá em baixo answer já recebe False
-                    type_graph = False
+    menu_1 = True
+    while menu_1:
+        menu_prints_options_with_or_without() # 1- Sem, 2 - Com, 0 - Sair
+        opt_menu_1 = input("        Choose W/OUT: ")
+        if opt_menu_1 == '1':
+            log_filtered=log
+            names=[]
+        if opt_menu_1 == '2':
+            menu_2 = True
+            while menu_2:
+                menu_prints_options_filter()    # 1 - Pessoas, 2 - Dias, 3 - Ambos
+                opt_menu_2 = input("        Choose Filter: ")
+                if opt_menu_2 == '1':
+                    log_filtered,names= menu_filter_names(log)
+                    # Sai desse menu_2 caso tenha acertado a opção
+                    menu_2 = False
+                elif opt_menu_2 == '2':
+                    log_filtered = menu_filter_days(log)
+                    # Sai desse menu_2 caso tenha acertado a opção
+                    menu_2 = False
+                elif opt_menu_2 == '3':
+                    log_filtered,names= menu_filter_days_names(log)
+                    # Sai desse menu_2 caso tenha acertado a opção
+                    menu_2 = False
                 else:
-                    # Se digitar outra opção diz que não encontrou
-                    print ("""
-                    Option not found
-                    """)
-                # Para sempre voltar para a escolha de GRAPH's
-                answer = False
-        elif type_graph == '2':
-            answer=True
-            while answer:
-                prints_options_with_or_without()
-                answer = input ("        What would you like to do ?  ")
-                if answer == '1':
-                    # Plota o gráfico
-                    create_and_plot_days(log_filtered,[])
-                elif answer == '2':
-                    prints_options_filter()
-                    # Escolhe a opção e faz os if's
-                    filtering = input ("""
-                    What filter ?  """)
-                    if filtering == '1':
-                        # Se for 1 vai fazer 1 laço pegando todos os nomes desejados a serem filtrados e plota o gráfico
-                        naming = True
-                        names=[]
-                        while naming:
-                            names.append(input("""
-                            Insert the name: """))
-                            naming=input("""
-                            1. One more time
-                            0. Leave
-                            Continue? """)
-                            if naming == '0':
-                                naming=False
-                        # Filtra o log com os nomes
-                        log_filtered=filter_names(log,names)
-                        # Plota o gráfico
-                        create_and_plot_days(log_filtered,names)
-                    elif filtering == '2':
-                        # Se for 2 vai filtrar o log entre as 2 datas dada
-                        print ("""
-                        Format: DAY/MONTH/YEAR""")
-                        first=convert_to_datetime(str(input("First Day ")))
-                        last=convert_to_datetime(str(input("Last Day ")))
-                        # Filtra o log
-                        log_filtered=filter_days(log,first,last)
-                        # Plota o gráfico
-                        create_and_plot_days(log_filtered,[])
-                    elif filtering == '3':
-                        # Se for 3 faz os dois filtros e junta no final
-                        naming = True
-                        names=[]
-                        while naming:
-                            names.append(input("""
-                            Insert the name: """))
-                            naming=input("""
-                            1. One more time
-                            0. Leave
-                            Continue? """)
-                            if naming == '0':
-                                naming=False
-                        # Filtra o log com os nomes
-                        log_filtered=filter_names(log,names)
-                        # Filtro de dias
-                        print ("      Format: DAY/MONTH/YEAR")
-                        first=convert_to_datetime(str(input("First Day ")))
-                        last=convert_to_datetime(str(input("Last Day ")))
-                        # Filtra o log filtrado por nomes com dias agora
-                        log_filtered=filter_days(log_filtered,first,last)
-                        # Plota o gráfico
-                        create_and_plot_days(log_filtered,names)
-                        filtering = False
-                    else:
-                        # Se digitar outra opção diz que não encontrou
-                        print ("""
-                        Option not found
-                        """)
-                elif answer == '0':
-                    # Se a resposta for sair, type_graph vai receber False e lá em baixo answer já recebe False
-                    type_graph = False
-                else:
-                    # Se digitar outra opção diz que não encontrou
-                    print ("""
-                    Option not found
-                    """)
-                # Para sempre voltar para a escolha de GRAPH's
-                answer = False
-        if type_graph == '0':
-            # Sai do programa
-            type_graph = False
-#--------------------------------------------- PLOT GRAPH ------------------------------------#
+                    print("        Opção não encontrada")
+                    # Fica no menu se errour
+        menu_3 = True
+        while menu_3:
+            menu_print_options_graph() # 1 - Bars, 2 - Lines
+            opt_menu_3 = input("        Choose Graph: ")
+            if opt_menu_3 == '1':
+                create_and_plot_bar(log_filtered)
+                menu_3 = False
+            elif opt_menu_3 == '2':
+                create_and_plot_lines(log_filtered,names)
+                # Sai do menu_3
+                menu_3 = False
+        if opt_menu_1 == '0':
+            # Sai do menu e do programa consequentemente
+            menu_1 = False
+        else:
+            print("        Opção não encontrada")
