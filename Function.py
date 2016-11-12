@@ -4,6 +4,7 @@ import os.path
 import tkinter.filedialog as filedialog
 from datetime import datetime
 from datetime import date
+from operator import itemgetter
 import operator
 import matplotlib.pyplot as plt
 import numpy as np
@@ -55,6 +56,7 @@ def filter_names(log,names):
     for x in log:
         if log[x].name in names:
             log_filtered[i]=log[x]
+            print(log_filtered[i].name)
             i=i+1
     return log_filtered
 
@@ -209,8 +211,6 @@ file_ = "C:\\Users\\leona\\Desktop\\Script\\script-moodle\\logs.xlsx"
 if file_ == False:
     print("Nenhum arquivo achado")
 else:
-    # Carrega o log no tipo para BAR
-    log=load_log_lines(file_)
     type_graph=True
     while type_graph:
         print("""
@@ -221,6 +221,8 @@ else:
         """)
         type_graph = input("        Your type: ")
         if type_graph == '1':
+            # Carrega o log no tipo para BAR
+            log=load_log_bar(file_)
             answer=True
             while answer:
                 print ("""
