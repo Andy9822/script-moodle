@@ -217,6 +217,8 @@ def convert_to_datetime(date_string):
     date_object = datetime.strptime(date_string,"%d/%m/%Y").date()
     return date_object
 
+#--------------------------- CONSISTÊNCIAS ------------------------------------#
+
 def load_log(file_):
     # Recebe um arquivo EXCEL e retorna a log
     if not file_:
@@ -240,11 +242,22 @@ def load_log(file_):
 
 def is_date(string):
     # Recebe um string e verifica se está no formato date compatível
-    format_= re.compile('.{2}/.{2}/.{4}')
-    if format_.match(string):
+    format_1= re.compile('.{2}/.{2}/.{4}')
+    format_2 = re.compile('.{2}/.{1}/.{4}')
+    format_3 = re.compile('.{1}/.{2}/.{4}')
+    format_4 = re.compile('.{1}/.{1}/.{4}')
+    if format_1.match(string) or format_2.match(string) or format_3.match(string) or format_4.match(string) :
         return True
     else:
         False
+
+def testNameInLog(log,names):
+    # Retorna true se tem "apariçao" de "name" passado
+    # Verifica linha por linha se tem alguém com o mesmo nome, se tiver seta como true
+    for x in range(len(names)):
+        if how_visua_name(log,names[x]) != 0:
+            return True
+    return False
 
 # You are a CHAMPION BRO
 class Champion:
@@ -290,7 +303,10 @@ def menu_filter_names(log):
         0. Leave
         Continue? """)
         if naming == '0':
-            naming=False
+            if testNameInLog(log,names):
+                naming=False
+            else:
+                print ("""\n        No one is in the log, please insert someone who is in the log""")
     # Filtra o log com os nomes
     log_filtered=filter_names(log,names)
     return log_filtered,names
@@ -309,8 +325,7 @@ def menu_filter_days(log):
             last=convert_to_datetime(last)
             inserindo=False
         else:
-            print("""
-            Alguma data foi no formato errado""")
+            print("""\n        Alguma data foi no formato errado""")
     # Filtra o log
     log_filtered=filter_days(log,first,last)
     return log_filtered
@@ -333,9 +348,11 @@ else:
     while menu_1:
         menu_prints_options_with_or_without() # 1- Sem, 2 - Com, 0 - Sair
         opt_menu_1 = input("        Choose W/OUT: ")
+        # Inicializa variavel
+        names=[]
         if opt_menu_1 == '1':
+            # Inicializa log_filtered
             log_filtered=log
-            names=[]
         if opt_menu_1 == '2':
             menu_2 = True
             while menu_2:
@@ -361,9 +378,12 @@ else:
             menu_print_options_graph() # 1 - Bars, 2 - Lines
             opt_menu_3 = input("        Choose Graph: ")
             if opt_menu_3 == '1':
+                # Se escolheu BARS plota BAR
                 create_and_plot_bar(log_filtered)
+                # Sai do menu_3
                 menu_3 = False
             elif opt_menu_3 == '2':
+                # Se escolheu LINES plota LINES
                 create_and_plot_lines(log_filtered,names)
                 # Sai do menu_3
                 menu_3 = False
