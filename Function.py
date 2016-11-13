@@ -353,7 +353,7 @@ else:
         if opt_menu_1 == '1':
             # Inicializa log_filtered
             log_filtered=log
-        if opt_menu_1 == '2':
+        elif opt_menu_1 == '2':
             menu_2 = True
             while menu_2:
                 menu_prints_options_filter()    # 1 - Pessoas, 2 - Dias, 3 - Ambos
@@ -372,8 +372,15 @@ else:
                     menu_2 = False
                 else:
                     print("        Opção não encontrada")
-                    # Fica no menu se errour
+                    # Fica no menu se errar
         menu_3 = True
+        if opt_menu_1 == '0':
+            # Sai do menu e do programa consequentemente
+            menu_1 = False
+            menu_3 = False
+        elif opt_menu_1 != '1' and opt_menu_1 != '2' and opt_menu_1 != '0':
+            print("        Opção não encontrada")
+            menu_3 = False
         while menu_3:
             menu_print_options_graph() # 1 - Bars, 2 - Lines
             opt_menu_3 = input("        Choose Graph: ")
@@ -387,8 +394,3 @@ else:
                 create_and_plot_lines(log_filtered,names)
                 # Sai do menu_3
                 menu_3 = False
-        if opt_menu_1 == '0':
-            # Sai do menu e do programa consequentemente
-            menu_1 = False
-        else:
-            print("        Opção não encontrada")
