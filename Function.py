@@ -121,6 +121,7 @@ def create_and_plot_lines(log,names):
         y = np.array(numbers)
         # Pega as datas para colocar em baixo
         my_xticks = days
+        # esse 1.0 é a distancia entre eles, se aumentar não vai plotar todos
         plt.xticks(np.arange(min(x), max(x)+1,1.0),my_xticks, rotation=90)
         plt.ylabel('Número de acessos')
         plt.title('Todas as pessoas no log')
@@ -158,7 +159,7 @@ def create_and_plot_lines(log,names):
             # Pega as datas para colocar em baixo
             my_xticks = days
             my_yticks = names
-            plt.xticks(np.arange(min(x), max(x)+1,5.0),my_xticks, rotation=90)
+            plt.xticks(np.arange(min(x), max(x)+1,1.0),my_xticks, rotation=90)
             plt.ylabel('Número de acessos')
             plt.title("Gráfico separado por pessoas")
             with plt.style.context('fivethirtyeight'):
@@ -166,16 +167,6 @@ def create_and_plot_lines(log,names):
         # Vai mostrar o que foi plotado
         plt.legend()
         plt.show()
-
-def create_and_plot_days_with_names(log):
-    # Cria um gráfico com várias linhas e cada uma representa uma pessoas
-    days,numbers = create_list(log)
-    x = np.linspace(0, 10)
-    with plt.style.context('fivethirtyeight'):
-        fname = cbook.get_sample_data('msft.csv', asfileobj=False)
-        # test 5; single subplot
-        plt.plotfile(fname, ('date', 'open', 'high', 'low', 'close'), subplots=True)
-        plt.show() # USO FUTURO
 
 def create_list(log):
     # Recebe um log e cria duas listas com seus dias e seus acessos respectivos no mesmo indice
