@@ -125,7 +125,8 @@ def create_and_plot_lines(log,names):
         plt.ylabel('Número de acessos')
         plt.title('Todas as pessoas no log')
         with plt.style.context('fivethirtyeight'):
-            plt.plot(x,y)
+            plt.plot(x,y,label = 'Everyone')
+            plt.legend()
             plt.show()
     else:
         # Se tiver algo no names
@@ -156,11 +157,14 @@ def create_and_plot_lines(log,names):
             y = np.array(numbers)
             # Pega as datas para colocar em baixo
             my_xticks = days
-            plt.xticks(np.arange(min(x), max(x)+1,1.0),my_xticks, rotation=90)
+            my_yticks = names
+            plt.xticks(np.arange(min(x), max(x)+1,5.0),my_xticks, rotation=90)
             plt.ylabel('Número de acessos')
-            plt.title(names[i])
-            plt.plot(x,y)
+            plt.title("Gráfico separado por pessoas")
+            with plt.style.context('fivethirtyeight'):
+                plt.plot(x,y,label = names[i])
         # Vai mostrar o que foi plotado
+        plt.legend()
         plt.show()
 
 def create_and_plot_days_with_names(log):
@@ -218,19 +222,48 @@ def convert_to_datetime(date_string):
     return date_object
 
 #--------------------------- CONSISTÊNCIAS ------------------------------------#
+def compare_people(log_name,list_names):
+    # Compara um Nome com uma Lista de Nomes
+    #S e esse nome for igual a qualquer uma da lista Retorna True, se não False
+    for x in list_names:
+        if log_name == x.upper() or log_name == 'Nome completo':
+            return True
+    return False
+
+def who_exclude():
+    # Pergunta se quer tirar alguém, se responder sim
+    # Vai fazer append com a lista["Nome completo"]
+    # Com os outros nomes e retornar essa lista de strings
+    typing = input("Do you want filter off someone? 1. YES  0. NO ")
+    if typing == '1' or typing == 'YES' or typing == "Y":
+        typing = True
+    elif typing == '0' or typing == 'NO' or typing == "N":
+        typing = False
+    else:
+        print("Standart filter")
+    names=["Nome completo"]
+    while typing:
+        names.append(str(input("Name: ")))
+        print("1. One more time 0. Leave")
+        typing=input("Choice: ")
+        if typing == '0':
+            typing = False
+    return names
 
 def load_log(file_):
     # Recebe um arquivo EXCEL e retorna a log
+    # Também pergunta se deseja retirar alguém do log
     if not file_:
         return False
     else:
+        names=who_exclude()
         print ("Carregando arquivo...")
         # Inicia a lista
         log={}
         i=0
         # Faz um for ignorando a primeira linha
         for linha in xlread(file_):
-            if linha[0] != "Hora":
+            if not compare_people(linha[1],names):
                 # Carrega as 9 características em 1 e vai para o próximo
                 # Separa a data em DATA[0] HORA[1]
                 data_splited=(linha[0].split(' '))
@@ -297,7 +330,7 @@ def menu_filter_names(log):
     names=[]
     while naming:
         names.append(input("""
-        Insert the name: """))
+        Insert the name: """).upper())
         naming=input("""
         1. One more time
         0. Leave
@@ -315,7 +348,7 @@ def menu_filter_days(log):
     inserindo=True
     while inserindo:
         print ("""
-        Format: DAY/MONTH/YEAR HOUR:MINUTES""")
+        Format: DAY/MONTH/YEAR""")
         # Recebe os dois strings
         first=str(input("        First Day "))
         last=str(input("        Last Day "))
