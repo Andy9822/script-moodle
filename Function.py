@@ -10,9 +10,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.ticker as ticker
 import matplotlib.cbook as cbook
+import matplotlib as mpl
 from matplotlib.mlab import csv2rec
 from matplotlib.cbook import get_sample_data
 import re
+import math
+import pylab as pl
 
 def xlread(arq_xls):
     # Abre o arquivo
@@ -122,10 +125,13 @@ def create_and_plot_lines(log,names):
         # Pega as datas para colocar em baixo
         my_xticks = days
         # esse 1.0 é a distancia entre eles, se aumentar não vai plotar todos
-        plt.xticks(np.arange(min(x), max(x)+1,1.0),my_xticks, rotation=90)
+        plt.xticks(np.arange(min(x), max(x)+1,1.0),my_xticks, rotation=290, size = 13)
+        #plt.locator_params(axis='x',nbins=45)
         plt.ylabel('Número de acessos')
         plt.title('Todas as pessoas no log')
+        # Colore o grafico
         with plt.style.context('fivethirtyeight'):
+            # Titulo do grafico
             plt.plot(x,y,label = 'Everyone')
             plt.legend()
             plt.show()
@@ -159,10 +165,13 @@ def create_and_plot_lines(log,names):
             # Pega as datas para colocar em baixo
             my_xticks = days
             my_yticks = names
-            plt.xticks(np.arange(min(x), max(x)+1,1.0),my_xticks, rotation=90)
+            plt.xticks(np.arange(min(x), max(x)+1,1.0),my_xticks, rotation=290, size = 13)
             plt.ylabel('Número de acessos')
+            # Titulo do grafico
             plt.title("Gráfico separado por pessoas")
+            # Colore o gráfico
             with plt.style.context('fivethirtyeight'):
+                # esse "=" é a legenda da pessoa
                 plt.plot(x,y,label = names[i])
         # Vai mostrar o que foi plotado
         plt.legend()
@@ -231,6 +240,7 @@ def who_exclude():
     elif typing == '0' or typing == 'NO' or typing == "N":
         typing = False
     else:
+        typing = False
         print("Standart filter")
     names=["Nome completo"]
     while typing:
