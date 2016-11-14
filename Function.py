@@ -629,16 +629,16 @@ class Interface(Frame):
 
 
         self.infoData1 = Label(self, text = "Data inicial (dd/mm/ano)")
-        self.infoData1.grid(row= 2,column = 1,sticky = W)
+        self.infoData1.grid(row= 1,column = 1,sticky = W)
 
         self.infoData2 = Label(self, text =  "Data final (dd/mm/ano)")
-        self.infoData2.grid(row= 2,column = 2,columnspan = 2,sticky = W)
+        self.infoData2.grid(row= 1,column = 2,columnspan = 2,sticky = W)
 
         self.startDate = Entry(self,width = 22)
-        self.startDate.grid(row = 3, column = 1,sticky = W)
+        self.startDate.grid(row = 2, column = 1,sticky = W)
 
         self.finalDate = Entry(self,width = 22)
-        self.finalDate.grid(row = 3, column = 2,sticky = W)
+        self.finalDate.grid(row = 2, column = 2,sticky = W)
 
         self.infoPessoas = Label(self, text =  "Filtrar por pessoas ")
         self.infoPessoas.grid(row= 5,column = 1, columnspan = 2)
@@ -658,7 +658,7 @@ class Interface(Frame):
         self.confirmExcludePerson.grid(row = 10, column = 1, sticky = SW)
 
         self.confirmButton =  Button(self,text = "                            Confirmar Datas                                ",bd = 2,command = self.confirmDates)
-        self.confirmButton.grid(row = 4, column = 1, sticky = W, columnspan = 2)
+        self.confirmButton.grid(row = 3, column = 1, sticky = W, columnspan = 2)
 
         self.confirmButton =  Button(self,text = "         Resetar Datas        ",bd = 2,command = self.resetDates)
         self.confirmButton.grid(row = 10, column = 2, sticky = SW)
