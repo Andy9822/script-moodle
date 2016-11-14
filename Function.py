@@ -516,6 +516,8 @@ class Interface(Frame):
         self.escolheuInteravalo = False
         self.escolheuGrafico = False
         self.podeMostrar =  False
+        self.parent = master
+        self.initUI()
         self.inicio = "oi"
         self.final = "oi"
         self.namesFilter =[]
@@ -523,6 +525,25 @@ class Interface(Frame):
         self.log = {}
         self.filterOption = IntVar()
         self.filterButtons()
+
+
+
+
+    def initUI(self):
+
+        self.parent.title("Simple menu")
+
+        menubar = Menu(self.parent)
+        self.parent.config(menu=menubar)
+
+        fileMenu = Menu(menubar)
+        fileMenu.add_command(label="Escolher arquivo...", command=self.chooseFile)
+        fileMenu.add_command(label="Exit", command=self.onExit)
+        menubar.add_cascade(label="File", menu=fileMenu)
+
+    def onExit(self):
+        self.quit()
+
 
     def exName(self):
         newName = self.excludePerson.get()
@@ -633,7 +654,7 @@ class Interface(Frame):
 
     def filterButtons(self):
 
-        self.botaoArquivo = Button(self, text = "Escolher arquivo dos logs...",bd = 5,relief = RAISED,bg = "gray",fg = "black",command = self.chooseFile ).grid( row = 0, column = 0)
+        #self.botaoArquivo = Button(self, text = "Escolher arquivo dos logs...",bd = 5,relief = RAISED,bg = "gray",fg = "black",command = self.chooseFile ).grid( row = 0, column = 0)
 
         if self.escolheuArquivo == True :
             #Label(self,highlightthickness= 3, fg = "white",bg = "gray",text = "Escolha qual filtro utilizar ",bd = 3,relief=GROOVE,anchor=W).grid(row = 0,column = 0)
