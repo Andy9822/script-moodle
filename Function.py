@@ -35,7 +35,7 @@ def rangerows(arq_xls):
     plan = xls.sheets()[0]
     return plan.nrows
 
-def how_visua_name(log,name): 
+def how_visua_name(log,name):
     # Retorna o numero de "aparições" de "a"
     a=0
     # Verifica linha por linha se tem alguém com o mesmo nome, se tiver acrescenta no valor a ser devolvido
@@ -124,7 +124,7 @@ def create_and_plot_lines(log,names):
         y = np.array(numbers)
         # Pega as datas para colocar em baixo
         my_xticks = days
-        plt.figure(figsize=(30,10))
+        #plt.figure(figsize=(30,10))
         # esse 1.0 é a distancia entre eles, se aumentar não vai plotar todos
         plt.xticks(np.arange(min(x), max(x)+1,1.0),my_xticks, rotation=290, size = 13)
         #plt.locator_params(axis='x',nbins=45)
@@ -166,7 +166,7 @@ def create_and_plot_lines(log,names):
             y = np.array(numbers)
             # Pega as datas para colocar em baixo
             my_xticks = days
-            plt.figure(figsize=(30,10))
+            #plt.figure(figsize=(30,10))
             my_yticks = names
             plt.xticks(np.arange(min(x), max(x)+1,1.0),my_xticks, rotation=290, size = 13)
             plt.ylabel('Número de acessos')
@@ -212,7 +212,7 @@ def plotgraph_bar(people,number):
     y_pos = np.arange(len(people))
     # Number = os numeros de cada people
     error = np.random.rand(len(people))
-    plt.figure(figsize=(30,10))
+    #plt.figure(figsize=(30,10))
     plt.barh(y_pos, number,0.8, align='center', alpha=0.5)
     plt.yticks(y_pos, people)
     plt.xlabel('Perguntas')
@@ -407,9 +407,9 @@ def menu_filter_days_names(log):
 
 #------------------------------------------ MENU do pai vianna---------------------------------------------#
 '''
- Define uma constante para arquivo
-#file_ =  filedialog.askopenfilename()
-file_ = "C:\\Users\\leona\\Desktop\\Script\\script-moodle\\logs.xlsx"
+#Define uma constante para arquivo
+file_ =  filedialog.askopenfilename()
+#file_ = "C:\\Users\\leona\\Desktop\\Script\\script-moodle\\logs.xlsx"
 if file_ == False:
     print("Nenhum arquivo achado")
 else:
@@ -464,10 +464,11 @@ else:
                 create_and_plot_lines(log_filtered,names)
                 # Sai do menu_3
                 menu_3 = False
+
 '''
 
-
 #------------------------------------------ MENU  Graphical User Interface ---------------------------------------------#
+#
 #'''
 
 # Define uma constante para arquivo
