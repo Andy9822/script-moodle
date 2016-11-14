@@ -124,6 +124,7 @@ def create_and_plot_lines(log,names):
         y = np.array(numbers)
         # Pega as datas para colocar em baixo
         my_xticks = days
+        plt.figure(figsize=(30,10))
         # esse 1.0 é a distancia entre eles, se aumentar não vai plotar todos
         plt.xticks(np.arange(min(x), max(x)+1,1.0),my_xticks, rotation=290, size = 13)
         #plt.locator_params(axis='x',nbins=45)
@@ -135,6 +136,7 @@ def create_and_plot_lines(log,names):
             plt.plot(x,y,label = 'Everyone')
             plt.legend()
             plt.show()
+
     else:
         # Se tiver algo no names
         people=[]
@@ -164,6 +166,7 @@ def create_and_plot_lines(log,names):
             y = np.array(numbers)
             # Pega as datas para colocar em baixo
             my_xticks = days
+            plt.figure(figsize=(30,10))
             my_yticks = names
             plt.xticks(np.arange(min(x), max(x)+1,1.0),my_xticks, rotation=290, size = 13)
             plt.ylabel('Número de acessos')
@@ -209,6 +212,7 @@ def plotgraph_bar(people,number):
     y_pos = np.arange(len(people))
     # Number = os numeros de cada people
     error = np.random.rand(len(people))
+    plt.figure(figsize=(30,10))
     plt.barh(y_pos, number,0.8, align='center', alpha=0.5)
     plt.yticks(y_pos, people)
     plt.xlabel('Perguntas')
@@ -258,6 +262,29 @@ def load_log(file_):
         return False
     else:
         names=who_exclude()
+        print ("Carregando arquivo...")
+        # Inicia a lista
+        log={}
+        i=0
+        # Faz um for ignorando a primeira linha
+        for linha in xlread(file_):
+            if not compare_people(linha[1],names):
+                # Carrega as 9 características em 1 e vai para o próximo
+                # Separa a data em DATA[0] HORA[1]
+                data_splited=(linha[0].split(' '))
+                # Converte a data separada para datetime
+                log[i] = Champion(convert_to_datetime(data_splited[0]),linha[1],linha[2],linha[3],linha[4],linha[5],linha[6],linha[7],linha[8])
+                i=1+i
+        print ("Carregamento concluido")
+        return log
+
+
+def load_logGUI(file_,names):
+    # Recebe um arquivo EXCEL e retorna a log
+    # Também pergunta se deseja retirar alguém do log
+    if not file_:
+        return False
+    else:
         print ("Carregando arquivo...")
         # Inicia a lista
         log={}
@@ -328,7 +355,7 @@ def menu_prints_options_filter():
 
 def menu_filter_names(log):
     naming = True
-    names=[]
+
     while naming:
         names.append(input("""
         Insert the name: """).upper())
@@ -344,6 +371,14 @@ def menu_filter_names(log):
     # Filtra o log com os nomes
     log_filtered=filter_names(log,names)
     return log_filtered,names
+
+
+def menu_filter_namesGUI(log,names):
+    if testNameInLog(log,names):
+        log=filter_names(log,names)
+    else:
+        print ("""\nNo one is in the log, will be considerated all the people """)
+    return log
 
 def menu_filter_days(log):
     inserindo=True
@@ -370,8 +405,9 @@ def menu_filter_days_names(log):
     log_filtered,names=menu_filter_names(log_filtered)
     return log_filtered,names
 
-#------------------------------------------ MENU ---------------------------------------------#
-# Define uma constante para arquivo
+#------------------------------------------ MENU do pai vianna---------------------------------------------#
+'''
+ Define uma constante para arquivo
 #file_ =  filedialog.askopenfilename()
 file_ = "C:\\Users\\leona\\Desktop\\Script\\script-moodle\\logs.xlsx"
 if file_ == False:
@@ -428,3 +464,243 @@ else:
                 create_and_plot_lines(log_filtered,names)
                 # Sai do menu_3
                 menu_3 = False
+'''
+
+
+#------------------------------------------ MENU  Graphical User Interface ---------------------------------------------#
+#'''
+
+# Define uma constante para arquivo
+#file_ =  filedialog.askopenfilename()
+#file_ = "C:\\Users\\leona\\Desktop\\Script\\script-moodle\\logs.xlsx"
+
+def mainMenu(file_,log,filterOption,names,inicial,final):
+
+    log_filtered = log
+    if  len(names) < 2 and not is_date(inicial):
+        # Inicializa log_filtered
+        log_filtered=log
+    else :
+        if  len(names) > 1 and not is_date(inicial):
+            log_filtered = filter_names(log,names)
+            print("parei em 2")
+
+        elif  is_date(inicial) and len(names) < 2:
+                print("PQ NAO TO CHEGANDO AQUI COROIO")
+                inicial = convert_to_datetime(inicial)
+                final = convert_to_datetime(final)
+                log_filtered=filter_days(log,inicial,final)
+
+        elif  is_date(inicial) and len(names) > 1:
+                inicial = convert_to_datetime(inicial)
+                final = convert_to_datetime(final)
+                log_filtered = filter_days(log,inicial,final)
+                log_filtered=filter_names(log,names)
+                print("parei em 3")
+
+                    # Sai desse menu_2 caso tenha acertado a opção
+    if filterOption == 1:
+                # Se escolheu BARS plota BAR
+        create_and_plot_bar(log_filtered)
+
+
+    elif filterOption == 2:
+                # Se escolheu LINES plota LINES
+        create_and_plot_lines(log_filtered,names)
+
+
+
+###########################################################################################
+from tkinter import *
+
+class Interface(Frame):
+
+    def __init__(self,master):
+        Frame.__init__(self,master)
+        self.grid()
+        self.filterButtons()
+        self.escolheuArquivo = False
+        self.escolheuFiltro = False
+        self.escolheuInteravalo = False
+        self.escolheuGrafico = False
+        self.inicio = "oi"
+        self.final = "oi"
+        self.namesFilter =[]
+        self.namesExclude = ["Nome completo"]
+        self.log = {}
+
+    def exName(self):
+
+        if self.escolheuArquivo:
+            newName = self.excludePerson.get()
+            print(newName)
+            if all(x.isalpha() or x.isspace() for x in newName):
+                newName =  newName.upper()
+                self.namesExclude.append(newName)
+                print("excluido")
+            else:
+                print("Nomes so podem ter letras e espaços mane")
+
+
+    def addName(self):
+        newName = self.entryPerson.get().upper()
+        if all(x.isalpha() or x.isspace() for x in newName):
+            self.namesFilter.append(newName)
+            print(self.namesFilter)
+
+        else:
+            print("SO QUERO LETRAS MANE")
+
+    def update_Grafico(self):
+        self.chosenGraphic = self.tipoGrafico.get()
+        self.escolheuGrafico  = True
+
+    def rodaGraph(self):
+        if  self.escolheuFiltro == True  and self.escolheuArquivo == True:
+            self.log = load_logGUI(self.file_,self.namesExclude)
+            if self.namesFilter:
+                self.log = menu_filter_namesGUI(self.log,self.namesFilter)
+                mainMenu(self.file_ ,self.log,self.optionFilter,self.namesFilter,self.inicio,self.final)
+            else:
+                print("Serao mostradas todas as pessoas")
+                mainMenu(self.file_ ,self.log,self.optionFilter,self.namesFilter,self.inicio,self.final)
+        else:
+            print("Escolha e preencha todas as opcoes necessarias")
+
+    def rodaStats(self):
+        if  self.escolheuFiltro == True and self.escolheuInteravalo ==  True and self.escolheuArquivo == True:
+            print("Vamo clan STATS")
+        else:
+            print("Escolha e preencha todas as opcoes necessarias para fazer statistics")
+
+    def update_Option(self):
+        self.optionFilter = self.filterOption.get()
+        print(self.optionFilter)
+        self.escolheuFiltro = True
+
+    def confirmDates(self):
+        self.inicio = self.startDate.get()
+        self.final = self.finalDate.get()
+        if is_date(self.inicio) and is_date(self.final):
+            self.escolheuInteravalo = True
+            print("Intervalo correto")
+        else:
+            print("Not invervalo")
+            self.inicio ="oi"
+
+    def fecharPrograma(self):
+        exit()
+
+    def resetNames(self):
+        self.namesFilter =[]
+        self.namesExclude = ["Nome completo"]
+        self.log = {}
+
+    def resetDates(self):
+        self.inicio = "oi"
+        self.final = "oi"
+
+    def chooseFile(self):
+        # Define uma constante para arquivo
+        self.file_ =  filedialog.askopenfilename()
+        names=["Nome completo"]
+        #file_ = "C:\\Users\\Andy\\Desktop\\Python\\logs.xlsx"
+        # Da load no arquivo e transforma em um dicionary com classe
+        self.log=load_logGUI(self.file_ , names)
+        if self.log == False:
+            print("Nenhum arquivo achado")
+        else:
+            print("PEGUEI CARALHO")
+            self.escolheuArquivo =  True
+
+    def filterButtons(self):
+
+        self.botaoArquivo = Button(self, text = "Escolher arquivo dos logs...",bd = 5,relief = RAISED,bg = "gray",fg = "black",command = self.chooseFile ).grid( row = 0, column = 0)
+
+        #Label(self,highlightthickness= 3, fg = "white",bg = "gray",text = "Escolha qual filtro utilizar ",bd = 3,relief=GROOVE,anchor=W).grid(row = 0,column = 0)
+
+        #Label(self,highlightthickness= 3, fg = "white",bg = "gray",text = "Escolha o intervalo de tempo ",bd = 3,relief=GROOVE,anchor=W).grid(row = 0,column = 1, sticky = W)
+
+        Label(self, text = "Selecione um filtro:",state = ACTIVE).grid(row= 1,column = 0, sticky =W)
+
+        self.option = IntVar()
+
+        Label(self, text = " ",state = ACTIVE).grid(row= 2,column = 0, sticky =W)
+
+
+        self.infoData1 = Label(self, text = "Data inicial (dd/mm/ano)")
+        self.infoData1.grid(row= 2,column = 1,sticky = W)
+
+        self.infoData2 = Label(self, text =  "Data final (dd/mm/ano)")
+        self.infoData2.grid(row= 2,column = 2,columnspan = 2,sticky = W)
+
+        self.startDate = Entry(self,width = 22)
+        self.startDate.grid(row = 3, column = 1,sticky = W)
+
+        self.finalDate = Entry(self,width = 22)
+        self.finalDate.grid(row = 3, column = 2,sticky = W)
+
+        self.infoPessoas = Label(self, text =  "Filtrar por pessoas ")
+        self.infoPessoas.grid(row= 5,column = 1, columnspan = 2)
+
+        self.entryPerson = Entry(self,width = 21)
+        self.entryPerson.grid(row = 6, column = 1,sticky = W)
+        self.confirmAddPerson =  Button(self,text = "Adicionar pessoa",height = 1,width = 17,bd = 2,command = self.addName)
+        self.confirmAddPerson.grid(row = 7, column = 1, sticky = W)
+
+        self.excludePerson = Entry(self,width = 21)
+        self.excludePerson.grid(row = 6, column = 2,sticky = W)
+
+        self.confirmExcludePerson =  Button(self,text = "Excluir pessoa ",height = 1,width = 17,bd = 2,command = self.exName)
+        self.confirmExcludePerson.grid(row = 7, column = 2, sticky = W)
+
+        self.confirmExcludePerson =  Button(self,text = "Resetar filtros de pessoas ",width = 18,bd = 2,command = self.resetNames)
+        self.confirmExcludePerson.grid(row = 10, column = 1, sticky = SW)
+
+        self.confirmButton =  Button(self,text = "                            Confirmar Datas                                ",bd = 2,command = self.confirmDates)
+        self.confirmButton.grid(row = 4, column = 1, sticky = W, columnspan = 2)
+
+        self.confirmButton =  Button(self,text = "         Resetar Datas        ",bd = 2,command = self.resetDates)
+        self.confirmButton.grid(row = 10, column = 2, sticky = SW)
+
+
+        self.runButton =  Button(self,text = "  Plot Graph",bg = "green", fg = "white",width = 16,height = 3,command = self.rodaGraph)
+        self.runButton.grid(row = 6, column = 0,rowspan = 2, sticky = W)
+
+        self.runButton =  Button(self,text = "  Plot Statistics",bg = "gray", fg = "white",width = 16,height = 3,command = self.rodaStats)
+        self.runButton.grid(row = 9, column = 0,rowspan = 2, sticky = SW)
+
+        Label(self, text = " ",state = ACTIVE).grid(row= 5,column = 0, sticky =W)
+
+        self.title6 = Label(self, text = " ",state = ACTIVE)
+        self.title6.grid(row= 8,column = 0, sticky =W)
+
+        #self.tipoGrafico = IntVar()
+        #self.barrasButton = Radiobutton(self,text = "Nº acessos totais ",indicatoron = 1,variable = self.tipoGrafico, value = 1 ,command = self.update_Grafico)
+        #self.barrasButton.grid(row = 8,column = 0,sticky = W)
+
+        #self.linesButton = Radiobutton(self,text = "Nº acessos por dia  ",indicatoron = 1,variable = self.tipoGrafico, value = 2 ,command = self.update_Grafico)
+        #self.linesButton.grid(row = 9,column = 0,sticky = W)
+
+        self.filterOption = IntVar()
+        self.accessButton = Radiobutton(self,text = "Grafico de barras ",bd = 2,relief =  GROOVE,indicatoron = 1,variable = self.filterOption, value = 1 ,command = self.update_Option)
+        self.accessButton.grid(row = 3,column = 0,sticky = W)
+
+        self.daysButton = Radiobutton(self,text = "Grafico de linhas ",bd = 2,relief =  GROOVE,indicatoron = 1,variable = self.filterOption, value = 2 ,command = self.update_Option)
+        self.daysButton.grid(row = 4,column = 0,sticky = W)
+
+        #self.aviso = Text(self, height = 2, width = 35,relief = RAISED,bd = 5,state = DISABLED).grid(row = 9, column = 0,sticky = W,columnspan = 2)
+
+
+window = Tk()
+window.title("GUI")
+window.geometry("500x300")
+b = Interface(window)
+window.mainloop()
+
+ #'''
+
+
+
+
+#--------------------------------------------- PLOT GRAPH ------------------------------------#
