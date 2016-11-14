@@ -35,7 +35,7 @@ def rangerows(arq_xls):
     plan = xls.sheets()[0]
     return plan.nrows
 
-def how_visua_name(log,name):
+def how_visua_name(log,name): 
     # Retorna o numero de "aparições" de "a"
     a=0
     # Verifica linha por linha se tem alguém com o mesmo nome, se tiver acrescenta no valor a ser devolvido
