@@ -336,10 +336,6 @@ def loadErikaLog(file_,studentsNames):
                         studentsList.append( Hero(linha[1],mensagem,participa,convert_to_datetime(data_splited[0])) )
                     elif not novoMane :
                         #Nao eh primeira vez do student, tem que ver se precisa atualizar alguma coisa
-                        print(linha[1])
-                        print(linha[0])
-                        print(linha[5])
-                        print("\n")
                         for x in studentsList:
                             if x.personName == linha[1]:
                                 if linha[5] == "Algum conteúdo foi publicado" :
