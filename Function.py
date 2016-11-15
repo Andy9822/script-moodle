@@ -287,6 +287,7 @@ def load_logGUI(file_,names):
     else:
         print ("Carregando arquivo...")
         # Inicia a lista
+        names=["Nome completo"]
         log={}
         i=0
         # Faz um for ignorando a primeira linha
@@ -300,6 +301,58 @@ def load_logGUI(file_,names):
                 i=1+i
         print ("Carregamento concluido")
         return log
+
+
+def loadErikaLog(file_,studentsNames):
+    #Recebe uma lista com nomes dos alunos EM MAIUSCULA
+    #Devolve uma lista apenas com os estudantes e suas infos das participações no forum de duvidas
+    studentsList = []
+    names=["Nome completo"]
+
+    if not file_:
+        return studentsList
+    else:
+        # Faz um for ignorando a primeira linha
+        for linha in xlread(file_):
+            if not compare_people(linha[1],names):
+                data_splited=(linha[0].split(' '))
+                novoMane = True
+                #Testa se pessoa da vez eh um estudante e precisa ser tratado
+                if linha[1] in studentsNames:
+                    for x in studentsList:
+                        if x.personName == linha[1]:
+                            novoMane = False
+                            break
+                    if novoMane:
+                        #Se eh um mane novo nois so adiciona ele mesmo
+                        participa = 0
+                        mensagem = 0
+                        if linha[5] == "Discussão visualizada":
+                            participa = 1
+                        elif linha[5] == "Algum conteúdo foi publicado" :
+                            participa = 1
+                            mensagem = 1
+                        #Antes de fazer append verifica se nessa primeira aparicao dele ele ja interagiu
+                        studentsList.append( Hero(linha[1],mensagem,participa,convert_to_datetime(data_splited[0])) )
+                    elif not novoMane :
+                        #Nao eh primeira vez do student, tem que ver se precisa atualizar alguma coisa
+                        for x in studentsList:
+                            if x.personName == linha[1]:
+                                if linha[5] == "Algum conteúdo foi publicado" :
+                                    #Se publicou conteudo, é mensagem a mais e participacao a mais (!!!!!!!talvez desconsiderar participacao e ser so mensagem !!!!!!)
+                                    x.numMessages += 1
+                                    x.numParticipations += 1
+                                    if convert_to_datetime(data_splited[0]) < x.firstPost:
+                                        #Se data eh menor que a de antes, pega essa nova
+                                        x.firstPost = convert_to_datetime(data_splited[0])
+                                elif linha[5] == "Discussão visualizada":
+                                    #Se eh so discussao visualizada, so add participacao por ter visto perguntas de coleguinhas
+                                    x.numParticipations += 1
+                                    if convert_to_datetime(data_splited[0]) < x.firstPost:
+                                        #Se data eh menor que a de antes, pega essa nova
+                                        x.firstPost = convert_to_datetime(data_splited[0])
+    return studentsList
+
 
 def is_date(string):
     # Recebe um string e verifica se está no formato date compatível
@@ -332,6 +385,14 @@ class Champion:
         self.description = description
         self.source = source
         self.ip = ip
+
+class Hero:
+    def __init__(self,personName,numMessages,numParticipations,firstPost):
+        self.personName = personName
+        self.numMessages = numMessages
+        self.numParticipations = numParticipations
+        self.firstPost =  firstPost
+
 #---------------------------------------FUNCTIONS MENU----------------------------------------#
 def menu_print_options_graph():
     print("""
@@ -476,7 +537,7 @@ def menuXuxu():
 #file_ =  filedialog.askopenfilename()
 #file_ = "C:\\Users\\leona\\Desktop\\Script\\script-moodle\\logs.xlsx"
 
-def mainMenu(file_,log,filterOption,names,inicial,final):
+def mainMenuGraph(file_,log,filterOption,names,inicial,final):
 
     log_filtered = log
     print("data inicio = ",inicial)
@@ -595,7 +656,7 @@ class Interface(Frame):
                     self.log = menu_filter_namesGUI(self.log,chosenPeople)
 
             if booleanTest:
-                mainMenu(self.file_ ,self.log,self.typeGraphic,chosenPeople,self.inicio,self.final)
+                mainMenuGraph(self.file_ ,self.log,self.typeGraphic,chosenPeople,self.inicio,self.final)
         else:
             print("Escolha e preencha todas as opcoes necessarias")
 
