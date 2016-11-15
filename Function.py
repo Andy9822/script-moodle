@@ -336,6 +336,10 @@ def loadErikaLog(file_,studentsNames):
                         studentsList.append( Hero(linha[1],mensagem,participa,convert_to_datetime(data_splited[0])) )
                     elif not novoMane :
                         #Nao eh primeira vez do student, tem que ver se precisa atualizar alguma coisa
+                        print(linha[1])
+                        print(linha[0])
+                        print(linha[5])
+                        print("\n")
                         for x in studentsList:
                             if x.personName == linha[1]:
                                 if linha[5] == "Algum conteúdo foi publicado" :
@@ -741,7 +745,7 @@ class Interface(Frame):
             self.finalDate = Entry(self,width = 22)
             self.finalDate.grid(row = 2, column = 2,sticky = W)
 
-            self.infoPessoas = Label(self, text =  "Filtrar por pessoas ")
+            self.infoPessoas = Label(self, text =  "Filtrar por pessoas  ")
             self.infoPessoas.grid(row= 5,column = 1, columnspan = 2)
 
             self.entryPerson = Entry(self,width = 21)
@@ -783,10 +787,10 @@ class Interface(Frame):
             #self.linesButton = Radiobutton(self,text = "Nº acessos por dia  ",indicatoron = 1,variable = self.tipoGrafico, value = 2 ,command = self.update_Grafico)
             #self.linesButton.grid(row = 9,column = 0,sticky = W)
 
-            self.accessButton = Radiobutton(self,text = "Grafico de barras ",bd = 2,relief =  GROOVE,indicatoron = 1,variable = self.filterOption, value = 1 ,command = self.update_Option)
+            self.accessButton = Radiobutton(self,text = "Acessos por pessoa ",bd = 2,relief =  GROOVE,indicatoron = 1,variable = self.filterOption, value = 1 ,command = self.update_Option)
             self.accessButton.grid(row = 3,column = 0,sticky = W)
 
-            self.daysButton = Radiobutton(self,text = "Grafico de linhas ",bd = 2,relief =  GROOVE,indicatoron = 1,variable = self.filterOption, value = 2 ,command = self.update_Option)
+            self.daysButton = Radiobutton(self,text = "Acessos por dia        ",bd = 2,relief =  GROOVE,indicatoron = 1,variable = self.filterOption, value = 2 ,command = self.update_Option)
             self.daysButton.grid(row = 4,column = 0,sticky = W)
 
             #self.aviso = Text(self, height = 2, width = 35,relief = RAISED,bd = 5,state = DISABLED).grid(row = 9, column = 0,sticky = W,columnspan = 2)
