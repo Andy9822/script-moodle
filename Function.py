@@ -729,41 +729,35 @@ class Interface(Frame):
             Label(self, text = " ",state = ACTIVE).grid(row= 2,column = 0, sticky =W)
 
 
+            #Bloco dos botoes e entradas dos filtros de datas
             self.infoData1 = Label(self, text = "Data inicial (dd/mm/ano)")
             self.infoData1.grid(row= 1,column = 1,sticky = W)
-
             self.infoData2 = Label(self, text =  "Data final (dd/mm/ano)")
             self.infoData2.grid(row= 1,column = 2,columnspan = 2,sticky = W)
-
             self.startDate = Entry(self,width = 22)
             self.startDate.grid(row = 2, column = 1,sticky = W)
-
             self.finalDate = Entry(self,width = 22)
             self.finalDate.grid(row = 2, column = 2,sticky = W)
+            self.confirmDatesBtn =  Button(self,text = "                            Confirmar Datas                                ",bd = 2,command = self.confirmDates)
+            self.confirmDatesBtn.grid(row = 3, column = 1, sticky = W, columnspan = 2)
 
+            self.resetDatesBtn =  Button(self,text = "         Resetar Datas        ",bd = 2,command = self.resetDates)
+            self.resetDatesBtn.grid(row = 10, column = 2, sticky = SW)
+            
+            #Bloco dos botoes e entrads de filros de pessoas
             self.infoPessoas = Label(self, text =  "Filtrar por pessoas  ")
-            self.infoPessoas.grid(row= 5,column = 1, columnspan = 2)
-
+            self.infoPessoas.grid(row= 5,column = 1, columnspan = 2)          
             self.entryPerson = Entry(self,width = 21)
-            self.entryPerson.grid(row = 6, column = 1,sticky = W)
+            self.entryPerson.grid(row = 6, column = 1,sticky = W) 
             self.confirmAddPerson =  Button(self,text = "Adicionar pessoa",height = 1,width = 17,bd = 2,command = self.addName)
             self.confirmAddPerson.grid(row = 7, column = 1, sticky = W)
-
             self.excludePerson = Entry(self,width = 21)
             self.excludePerson.grid(row = 6, column = 2,sticky = W)
-
             self.confirmExcludePerson =  Button(self,text = "Excluir pessoa ",height = 1,width = 17,bd = 2,command = self.exName)
             self.confirmExcludePerson.grid(row = 7, column = 2, sticky = W)
-
-            self.confirmExcludePerson =  Button(self,text = "Resetar filtros de pessoas ",width = 18,bd = 2,command = self.resetNames)
-            self.confirmExcludePerson.grid(row = 10, column = 1, sticky = SW)
-
-            self.confirmButton =  Button(self,text = "                            Confirmar Datas                                ",bd = 2,command = self.confirmDates)
-            self.confirmButton.grid(row = 3, column = 1, sticky = W, columnspan = 2)
-
-            self.confirmButton =  Button(self,text = "         Resetar Datas        ",bd = 2,command = self.resetDates)
-            self.confirmButton.grid(row = 10, column = 2, sticky = SW)
-
+            self.resetPeople =  Button(self,text = "Resetar filtros de pessoas ",width = 18,bd = 2,command = self.resetNames)
+            self.resetPeople.grid(row = 10, column = 1, sticky = SW)
+            
             if self.escolheuFiltro:
                 self.runButton =  Button(self,text = "  Plot Graph",bg = "green", fg = "white",width = 16,height = 3,command = self.rodaGraph)
                 self.runButton.grid(row = 6, column = 0,rowspan = 2, sticky = W)
