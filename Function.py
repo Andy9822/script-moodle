@@ -255,7 +255,7 @@ def who_exclude():
             typing = False
     return names
 
-def nomes_excel(file_):
+def names_excel(file_):
     # Dado um arquivo excel no formato [w/e][w/e][Nome]....[w/e]
     # Retorna uma lista desses nomes
     if not file_:
@@ -266,23 +266,15 @@ def nomes_excel(file_):
         names = []
         for linha in xlread(file_):
             if not compare_people(linha[2],names):
-                names.append(linha[2]).upper()
+                names.append(linha[2])
         return names
 
-def visualizacoes(log,name):
-    # Recebe o LOG e um NOME, retorna o numero de mensagens e participacoes nesse log
-    participa = 0
-    mensagem = 0
-    for linha in log:
-        if log[linha].name == name:
-            if log[linha].event == 'Discussão visualizada':
-                participa = participa + 1
-            elif log[linha].event == 'Algum conteúdo foi publicado':
-                participa = participa + 1
-                mensagem = mensagem + 1
-    print (participa)
-    print (mensagem)
-    return participa,mensagem
+def name_in_hero(heroes,name):
+    # Recebe uma lista de hero e um nome, retorna se essa nome esta na lista
+    for x in heroes:
+        if x.personName == name:
+            return True
+    return False
 
 def load_log(file_):
     # Recebe um arquivo EXCEL e retorna a log
@@ -345,14 +337,9 @@ def loadErikaLog(file_,studentsNames):
         for linha in xlread(file_):
             if not compare_people(linha[1],names):
                 data_splited=(linha[0].split(' '))
-                novoMane = True
                 #Testa se pessoa da vez eh um estudante e precisa ser tratado
                 if linha[1] in studentsNames:
-                    for x in studentsList:
-                        if x.personName == linha[1]:
-                            novoMane = False
-                            break
-                    if novoMane:
+                    if not name_in_hero(studentsList,linha[1]):
                         #Se eh um mane novo nois so adiciona ele mesmo
                         participa = 0
                         mensagem = 0
@@ -362,8 +349,10 @@ def loadErikaLog(file_,studentsNames):
                             participa = 1
                             mensagem = 1
                         #Antes de fazer append verifica se nessa primeira aparicao dele ele ja interagiu
-                        studentsList.append( Hero(linha[1],mensagem,participa,convert_to_datetime(data_splited[0])) )
-                    elif not novoMane :
+                        if participa == 0 and mensagem == 0:
+                            data_splited = ["01/01/9999"]
+                        studentsList.append( Hero(linha[1],mensagem,participa,convert_to_datetime(data_splited[0])))
+                    elif name_in_hero(studentsList,linha[1]):
                         #Nao eh primeira vez do student, tem que ver se precisa atualizar alguma coisa
                         for x in studentsList:
                             if x.personName == linha[1]:
@@ -380,8 +369,7 @@ def loadErikaLog(file_,studentsNames):
                                     if convert_to_datetime(data_splited[0]) < x.firstPost:
                                         #Se data eh menor que a de antes, pega essa nova
                                         x.firstPost = convert_to_datetime(data_splited[0])
-    return studentsList
-
+        return studentsList
 
 def is_date(string):
     # Recebe um string e verifica se está no formato date compatível
@@ -421,6 +409,18 @@ class Hero:
         self.numMessages = numMessages
         self.numParticipations = numParticipations
         self.firstPost =  firstPost
+
+file_ =  filedialog.askopenfilename()
+namelist = names_excel(file_)
+file_ =  filedialog.askopenfilename()
+studentslist = loadErikaLog(file_,namelist)
+for x in studentslist:
+    print (x.personName)
+    print (x.numMessages)
+    print (x.numParticipations)
+    print (x.firstPost)
+
+
 
 #---------------------------------------FUNCTIONS MENU----------------------------------------#
 def menu_print_options_graph():
@@ -496,9 +496,6 @@ def menu_filter_days_names(log):
     return log_filtered,names
 
 #------------------------------------------ MENU do pai vianna---------------------------------------------#
-file_ =  filedialog.askopenfilename()
-log = load_log(file_)
-visualizacoes(log,'IVONE MALUF MEDERO')
 def menuXuxu():
     #Define uma constante para arquivo
     file_ =  filedialog.askopenfilename()
