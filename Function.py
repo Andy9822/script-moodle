@@ -184,15 +184,40 @@ def name_in_Aluno(Alunos,name):
             return True
     return False
 
-def loadErikaLog(file_,studentsNames):
+
+def numWeeklyPosts(weeklyList,date_str,inicial):
+    #Recebe a data do post e calcula em qual semana foi postado para preencher na semana correspondente na lista
+    date = convert_to_datetime(date_str)
+    date = date.isocalendar()[1] - inicial
+    weeklyList[0] += 1
+    return weeklyList
+
+
+def create_weeklyList(inicial, final):
+    #Calcula intervalo de semanas e cria e preenche uma lista desses n elementos com zero (0)
+    weeklyList = []
+    inicial = inicial.isocalendar()[1]
+    final = final.isocalendar()[1]
+    amountWeeks = final - inicial
+    for x in range(amountWeeks):
+        weeklyList.append(0)
+    print (inicial)
+    return weeklyList,inicial
+
+
+def loadErikaLog(file_,studentsNames,inicial_str,final_str):
     #Recebe uma lista com nomes dos alunos EM MAIUSCULA
     #Devolve uma lista apenas com os estudantes e suas infos das participações no forum de duvidas
     studentsList = []
     names=["Nome completo"]
-
+    inicial = convert_to_datetime(inicial_str)
+    final = convert_to_datetime(final_str)
     if not file_:
         return studentsList
     else:
+        #Se foi passado um intervalo de tempo, precisa ser criada lista de posts por semana
+        if inicial:
+            weeklyList, inicial =  create_weeklyList(inicial,final)
         # Faz um for ignorando a primeira linha
         for linha in xlread(file_):
             if not linha[1] in names:
@@ -208,6 +233,9 @@ def loadErikaLog(file_,studentsNames):
                         elif linha[5] == "Algum conteúdo foi publicado" :
                             participa = 1
                             mensagem = 1
+                            #Se foi passado um intervalo de tempo, precisa ser atualizada lista de posts por semana
+                            if inicial:
+                                weeklyList = numWeeklyPosts(weeklyList,data_splited[0],inicial)
                         if participa == 0 and mensagem == 0:
                             data_splited = ["01/01/9999"]
                         studentsList.append(Aluno(linha[1],mensagem,participa,convert_to_datetime(data_splited[0])))
@@ -220,6 +248,9 @@ def loadErikaLog(file_,studentsNames):
                                     #Se publicou conteudo, é mensagem a mais e participacao a mais (!!!!!!!talvez desconsiderar participacao e ser so mensagem !!!!!!)
                                     x.numMessages += 1
                                     x.numParticipations += 1
+                                    #Se foi passado um intervalo de tempo, precisa ser atualizada lista de posts por semana
+                                    if inicial:
+                                        weeklyList = numWeeklyPosts(weeklyList,data_splited[0],inicial)
                                     if convert_to_datetime(data_splited[0]) < x.firstPost:
                                         #Se data eh menor que a de antes, pega essa nova
                                         x.firstPost = convert_to_datetime(data_splited[0])
@@ -229,7 +260,7 @@ def loadErikaLog(file_,studentsNames):
                                     if convert_to_datetime(data_splited[0]) < x.firstPost:
                                         #Se data eh menor que a de antes, pega essa nova
                                         x.firstPost = convert_to_datetime(data_splited[0])
-        return studentsList
+        return studentsList,weeklyList
 
 def is_date(string):
     # Recebe um string e verifica se está no formato date compatível
@@ -273,15 +304,15 @@ file_ =  filedialog.askopenfilename()
 namelist = names_excel(file_)
 
 file_ =  filedialog.askopenfilename()
-studentslist = loadErikaLog(file_,namelist)
+studentslist,weeklyList = loadErikaLog(file_,namelist,"02/08/2016","02/11/2016")
 amount_interactions(studentslist)
 which_participate(studentslist)
-for x in studentslist:
+"""for x in studentslist:
     print (x.personName)
     print (x.numMessages)
     print (x.numParticipations)
-    print (x.firstPost)
-
+    print (x.firstPost)"""
+create_and_plot_lines(weeklyList)
 
 #---------------------------------------FUNCTIONS MENU-------------------------#
 def menu_print_options_graph():
