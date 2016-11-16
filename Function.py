@@ -255,6 +255,35 @@ def who_exclude():
             typing = False
     return names
 
+def nomes_excel(file_):
+    # Dado um arquivo excel no formato [w/e][w/e][Nome]....[w/e]
+    # Retorna uma lista desses nomes
+    if not file_:
+        return False
+    else:
+        print("Carregando nomes...")
+        # Inicia a lista
+        names = []
+        for linha in xlread(file_):
+            if not compare_people(linha[2],names):
+                names.append(linha[2]).upper()
+        return names
+
+def visualizacoes(log,name):
+    # Recebe o LOG e um NOME, retorna o numero de mensagens e participacoes nesse log
+    participa = 0
+    mensagem = 0
+    for linha in log:
+        if log[linha].name == name:
+            if log[linha].event == 'Discussão visualizada':
+                participa = participa + 1
+            elif log[linha].event == 'Algum conteúdo foi publicado':
+                participa = participa + 1
+                mensagem = mensagem + 1
+    print (participa)
+    print (mensagem)
+    return participa,mensagem
+
 def load_log(file_):
     # Recebe um arquivo EXCEL e retorna a log
     # Também pergunta se deseja retirar alguém do log
@@ -263,7 +292,7 @@ def load_log(file_):
     else:
         names=who_exclude()
         print ("Carregando arquivo...")
-        # Inicia a lista
+        # Inicia o dic   # MUDAR DEPOIS #
         log={}
         i=0
         # Faz um for ignorando a primeira linha
@@ -366,7 +395,7 @@ def is_date(string):
         False
 
 def testNameInLog(log,names):
-    # Retorna true se tem "apariçao" de "name" passado
+    # Retorna true se tem apariçao"de "name" no log passado
     # Verifica linha por linha se tem alguém com o mesmo nome, se tiver seta como true
     for x in range(len(names)):
         if how_visua_name(log,names[x]) != 0:
@@ -467,10 +496,13 @@ def menu_filter_days_names(log):
     return log_filtered,names
 
 #------------------------------------------ MENU do pai vianna---------------------------------------------#
+file_ =  filedialog.askopenfilename()
+log = load_log(file_)
+visualizacoes(log,'IVONE MALUF MEDERO')
 def menuXuxu():
     #Define uma constante para arquivo
-    #file_ =  filedialog.askopenfilename()
-    file_ = "C:\\Users\\leona\\Desktop\\Script\\script-moodle\\logs.xlsx"
+    file_ =  filedialog.askopenfilename()
+    #file_ = "C:\\Users\\leona\\Desktop\\Script\\script-moodle\\logs.xlsx"
     if file_ == False:
         print("Nenhum arquivo achado")
     else:
@@ -743,12 +775,12 @@ class Interface(Frame):
 
             self.resetDatesBtn =  Button(self,text = "         Resetar Datas        ",bd = 2,command = self.resetDates)
             self.resetDatesBtn.grid(row = 10, column = 2, sticky = SW)
-            
+
             #Bloco dos botoes e entrads de filros de pessoas
             self.infoPessoas = Label(self, text =  "Filtrar por pessoas  ")
-            self.infoPessoas.grid(row= 5,column = 1, columnspan = 2)          
+            self.infoPessoas.grid(row= 5,column = 1, columnspan = 2)
             self.entryPerson = Entry(self,width = 21)
-            self.entryPerson.grid(row = 6, column = 1,sticky = W) 
+            self.entryPerson.grid(row = 6, column = 1,sticky = W)
             self.confirmAddPerson =  Button(self,text = "Adicionar pessoa",height = 1,width = 17,bd = 2,command = self.addName)
             self.confirmAddPerson.grid(row = 7, column = 1, sticky = W)
             self.excludePerson = Entry(self,width = 21)
@@ -757,7 +789,7 @@ class Interface(Frame):
             self.confirmExcludePerson.grid(row = 7, column = 2, sticky = W)
             self.resetPeople =  Button(self,text = "Resetar filtros de pessoas ",width = 18,bd = 2,command = self.resetNames)
             self.resetPeople.grid(row = 10, column = 1, sticky = SW)
-            
+
             if self.escolheuFiltro:
                 self.runButton =  Button(self,text = "  Plot Graph",bg = "green", fg = "white",width = 16,height = 3,command = self.rodaGraph)
                 self.runButton.grid(row = 6, column = 0,rowspan = 2, sticky = W)
