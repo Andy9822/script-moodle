@@ -144,6 +144,20 @@ def convert_to_datetime(date_string):
     date_object = datetime.strptime(date_string,"%d/%m/%Y").date()
     return date_object
 
+def amount_interactions(Alunos):
+    # Dado uma lista de Alunos retorna quantos enviaram mensagens
+    # E quantos não enviaram
+    sent = 0
+    not_sent = 0
+    for x in Alunos:
+        if x.numMessages > 0:
+            sent += 1
+    not_sent = len(Alunos) - sent
+    return sent,not_sent
+
+def which_participate(Alunos):
+    for x in Alunos:
+        if x.
 #--------------------------- CONSISTÊNCIAS ------------------------------------#
 def names_excel(file_):
     # Dado um arquivo excel no formato [w/e][w/e][Nome]....[w/e]
@@ -155,13 +169,13 @@ def names_excel(file_):
         # Inicia a lista
         names = []
         for linha in xlread(file_):
-            if not compare_people(linha[2],names):
+            if not linha[2] in names:
                 names.append(linha[2])
         return names
 
-def name_in_hero(heroes,name):
+def name_in_Aluno(Alunos,name):
     # Recebe uma lista de hero e um nome, retorna se essa nome esta na lista
-    for x in heroes:
+    for x in Alunos:
         if x.personName == name:
             return True
     return False
@@ -181,7 +195,7 @@ def loadErikaLog(file_,studentsNames):
                 data_splited=(linha[0].split(' '))
                 #Testa se pessoa da vez eh um estudante e precisa ser tratado
                 if linha[1] in studentsNames:
-                    if not name_in_hero(studentsList,linha[1]):
+                    if not name_in_Aluno(studentsList,linha[1]):
                         #Se eh um mane novo nois so adiciona ele mesmo
                         participa = 0
                         mensagem = 0
@@ -192,9 +206,9 @@ def loadErikaLog(file_,studentsNames):
                             mensagem = 1
                         if participa == 0 and mensagem == 0:
                             data_splited = ["01/01/9999"]
-                        studentsList.append( Hero(linha[1],mensagem,participa,convert_to_datetime(data_splited[0])))
+                        studentsList.append(Aluno(linha[1],mensagem,participa,convert_to_datetime(data_splited[0])))
                     #Antes de fazer append verifica se nessa primeira aparicao dele ele ja interagiu
-                    elif name_in_hero(studentsList,linha[1]):
+                    elif name_in_Aluno(studentsList,linha[1]):
                         #Nao eh primeira vez do student, tem que ver se precisa atualizar alguma coisa
                         for x in studentsList:
                             if x.personName == linha[1]:
@@ -244,7 +258,7 @@ class Champion:
         self.source = source
         self.ip = ip
 
-class Hero:
+class Aluno:
     def __init__(self,personName,numMessages,numParticipations,firstPost):
         self.personName = personName
         self.numMessages = numMessages
@@ -253,15 +267,15 @@ class Hero:
 
 file_ =  filedialog.askopenfilename()
 namelist = names_excel(file_)
+
 file_ =  filedialog.askopenfilename()
 studentslist = loadErikaLog(file_,namelist)
+amount_interactions(studentslist)
 for x in studentslist:
     print (x.personName)
     print (x.numMessages)
     print (x.numParticipations)
     print (x.firstPost)
-
-
 
 #---------------------------------------FUNCTIONS MENU-------------------------#
 def menu_print_options_graph():
@@ -303,7 +317,6 @@ def menu_filter_names(log):
     log_filtered=filter_names(log,names)
     return log_filtered,names
 
-
 def menu_filter_namesGUI(log,names):
     if testNameInLog(log,names):
         log=filter_names(log,names)
@@ -336,7 +349,7 @@ def menu_filter_days_names(log):
     log_filtered,names=menu_filter_names(log_filtered)
     return log_filtered,names
 
-#------------------------------------------ MENU do pai vianna---------------------------------------------#
+#--------------------------MENU do pai vianna----------------------------------#
 def menuXuxu():
     #Define uma constante para arquivo
     file_ =  filedialog.askopenfilename()
@@ -395,13 +408,7 @@ def menuXuxu():
                     create_and_plot_lines(log_filtered,names)
                     # Sai do menu_3
                     menu_3 = False
-
-
-
-
-#------------------------------------------ MENU  Graphical User Interface ---------------------------------------------#
-#
-
+#-------------------- MENU  Graphical User Interface --------------------------#
 
 # Define uma constante para arquivo
 #file_ =  filedialog.askopenfilename()
