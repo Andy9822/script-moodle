@@ -27,23 +27,6 @@ def xlread(arq_xls):
         # Le os valores nas linhas da planilha
         yield plan.row_values(i)
 
-def rangerows(arq_xls):
-    # Retorna o numero de linhas de um arquivo EXCEL
-    # Abre o arquivo
-    xls = xlrd.open_workbook(arq_xls)
-    # Pega a primeira planilha do arquivo
-    plan = xls.sheets()[0]
-    return plan.nrows
-
-def how_visua_name(log,name):
-    # Retorna o numero de "aparições" de "a"
-    a=0
-    # Verifica linha por linha se tem alguém com o mesmo nome, se tiver acrescenta no valor a ser devolvido
-    for linha in log:
-        if log[linha].name == name:
-            a=a+1
-    return a
-
 def how_visua_day(log,day):
     # Retorna quantos acessos ocorreu no Dia
     a=0
@@ -62,44 +45,6 @@ def how_visua_day_name(log,day,name):
             if log[linha].name == name:
                 a=a+1
     return a
-
-def filter_names(log,names):
-    # Recebe o Log e uma lista de nomes, retorna o Log somente com esses nomes
-    log_filtered = {}
-    i=0
-    # Para todo nome em NAMES verifica se ele esta no log, se estiver coloca em log_filtered
-    for x in log:
-        if log[x].name in names:
-            log_filtered[i]=log[x]
-            i=i+1
-    return log_filtered
-
-def filter_days(log,first,last): # LEMBRAR: O FORMATO DEVE SER "DIAS/MES/ANO HORA:MINUTOS" Ex: 26/03/1996 05:51
-    # Recebe o log e dois dias, retorna o log entre esses dois dias INCLUSIVE esses dias
-    log_filtered={}
-    i=0
-    for x in log:
-        if log[x].date >= first and log[x].date <= last:
-            log_filtered[i]=log[x]
-            i=i+1
-    return log_filtered
-
-def create_dic_name_number(log):
-    # Cria um dicionario com "Nome da pessoa" : "Quantos visualizaçoes"
-    dic={}
-    for linha in log:
-        if not log[linha].name in dic:
-            dic[log[linha].name] = how_visua_name(log,log[linha].name)
-    return dic
-
-def create_dic_days_number(log):
-    "NÃO ESTÁ SENDO USADO"
-    # Cria um dicionario com "Dia" : "Quantidade de acessos"
-    dic = {}
-    for linha in log:
-        if not log[linha].date in dic:
-            dic[log[linha].date]= how_visua_day(log,log[linha].date)
-    return dic
 
 def create_and_plot_bar(log):
     # Cria o dicionary e plota o grafico em forma de barras (bom para saber por pessoa)
@@ -180,32 +125,6 @@ def create_and_plot_lines(log,names):
         plt.legend()
         plt.show()
 
-def create_list(log):
-    # Recebe um log e cria duas listas com seus dias e seus acessos respectivos no mesmo indice
-    days=[]
-    numbers=[]
-    for x in log:
-        if not log[x].date in days:
-            days.append(log[x].date)
-            numbers.append(how_visua_day(log,log[x].date))
-    return days,numbers
-
-def present_people(dic):
-    # Recebe um dicionário e retorna uma lista com todos os nomes (keys)
-    ppl = []
-    for key in dic:
-        ppl.append(key)
-    return ppl
-
-def sorted_number_dic(dic):
-    # Recebe o dicionary e retorna 2 listas people and number
-    people=[]
-    number=[]
-    # Passa o dicionary para uma lista de tuplas e ordenada essa lista
-    sorted_ = sorted(dic.items(), key = operator.itemgetter(1))
-    people,number=zip(*sorted_)
-    return people,number
-
 def plotgraph_bar(people,number):
     plt.rcdefaults()
     # Peoples e Number já estão atualizados e ordenados
@@ -226,35 +145,6 @@ def convert_to_datetime(date_string):
     return date_object
 
 #--------------------------- CONSISTÊNCIAS ------------------------------------#
-def compare_people(log_name,list_names):
-    # Compara um Nome com uma Lista de Nomes
-    #S e esse nome for igual a qualquer uma da lista Retorna True, se não False
-    for x in list_names:
-        if log_name == x.upper() or log_name == 'Nome completo':
-            return True
-    return False
-
-def who_exclude():
-    # Pergunta se quer tirar alguém, se responder sim
-    # Vai fazer append com a lista["Nome completo"]
-    # Com os outros nomes e retornar essa lista de strings
-    typing = input("Do you want filter off someone? 1. YES  0. NO ")
-    if typing == '1' or typing == 'YES' or typing == "Y":
-        typing = True
-    elif typing == '0' or typing == 'NO' or typing == "N":
-        typing = False
-    else:
-        typing = False
-        print("Standart filter")
-    names=["Nome completo"]
-    while typing:
-        names.append(str(input("Name: ")))
-        print("1. One more time 0. Leave")
-        typing=input("Choice: ")
-        if typing == '0':
-            typing = False
-    return names
-
 def names_excel(file_):
     # Dado um arquivo excel no formato [w/e][w/e][Nome]....[w/e]
     # Retorna uma lista desses nomes
@@ -276,54 +166,6 @@ def name_in_hero(heroes,name):
             return True
     return False
 
-def load_log(file_):
-    # Recebe um arquivo EXCEL e retorna a log
-    # Também pergunta se deseja retirar alguém do log
-    if not file_:
-        return False
-    else:
-        names=who_exclude()
-        print ("Carregando arquivo...")
-        # Inicia o dic   # MUDAR DEPOIS #
-        log={}
-        i=0
-        # Faz um for ignorando a primeira linha
-        for linha in xlread(file_):
-            if not compare_people(linha[1],names):
-                # Carrega as 9 características em 1 e vai para o próximo
-                # Separa a data em DATA[0] HORA[1]
-                data_splited=(linha[0].split(' '))
-                # Converte a data separada para datetime
-                log[i] = Champion(convert_to_datetime(data_splited[0]),linha[1],linha[2],linha[3],linha[4],linha[5],linha[6],linha[7],linha[8])
-                i=1+i
-        print ("Carregamento concluido")
-        return log
-
-
-def load_logGUI(file_,names):
-    # Recebe um arquivo EXCEL e retorna a log
-    # Também pergunta se deseja retirar alguém do log
-    if not file_:
-        return False
-    else:
-        print ("Carregando arquivo...")
-        # Inicia a lista
-        names=["Nome completo"]
-        log={}
-        i=0
-        # Faz um for ignorando a primeira linha
-        for linha in xlread(file_):
-            if not compare_people(linha[1],names):
-                # Carrega as 9 características em 1 e vai para o próximo
-                # Separa a data em DATA[0] HORA[1]
-                data_splited=(linha[0].split(' '))
-                # Converte a data separada para datetime
-                log[i] = Champion(convert_to_datetime(data_splited[0]),linha[1],linha[2],linha[3],linha[4],linha[5],linha[6],linha[7],linha[8])
-                i=1+i
-        print ("Carregamento concluido")
-        return log
-
-
 def loadErikaLog(file_,studentsNames):
     #Recebe uma lista com nomes dos alunos EM MAIUSCULA
     #Devolve uma lista apenas com os estudantes e suas infos das participações no forum de duvidas
@@ -335,7 +177,7 @@ def loadErikaLog(file_,studentsNames):
     else:
         # Faz um for ignorando a primeira linha
         for linha in xlread(file_):
-            if not compare_people(linha[1],names):
+            if not linha[1] in names:
                 data_splited=(linha[0].split(' '))
                 #Testa se pessoa da vez eh um estudante e precisa ser tratado
                 if linha[1] in studentsNames:
@@ -348,10 +190,10 @@ def loadErikaLog(file_,studentsNames):
                         elif linha[5] == "Algum conteúdo foi publicado" :
                             participa = 1
                             mensagem = 1
-                        #Antes de fazer append verifica se nessa primeira aparicao dele ele ja interagiu
                         if participa == 0 and mensagem == 0:
                             data_splited = ["01/01/9999"]
                         studentsList.append( Hero(linha[1],mensagem,participa,convert_to_datetime(data_splited[0])))
+                    #Antes de fazer append verifica se nessa primeira aparicao dele ele ja interagiu
                     elif name_in_hero(studentsList,linha[1]):
                         #Nao eh primeira vez do student, tem que ver se precisa atualizar alguma coisa
                         for x in studentsList:
@@ -390,7 +232,6 @@ def testNameInLog(log,names):
             return True
     return False
 
-# You are a CHAMPION BRO
 class Champion:
     def __init__(self, date, name, affected, component, context, event, description, source, ip):
         self.date = date
@@ -422,7 +263,7 @@ for x in studentslist:
 
 
 
-#---------------------------------------FUNCTIONS MENU----------------------------------------#
+#---------------------------------------FUNCTIONS MENU-------------------------#
 def menu_print_options_graph():
     print("""
     Choose the GRAPH
