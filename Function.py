@@ -186,30 +186,35 @@ def name_in_Aluno(Alunos,name):
 
 
 def numWeeklyPosts(weeklyList,date_str,inicial):
-    #Recebe a data do post e calcula em qual semana foi postado para preencher na semana correspondente na lista
+    # Recebe a data do post e calcula em qual semana foi postado
+    # para preencher na semana correspondente na lista
     date = convert_to_datetime(date_str)
     date = date.isocalendar()[1] - inicial
-    weeklyList[0] += 1
+    # -1 Porque o indice é sempre 1 menor
+    weeklyList[date-1] += 1
     return weeklyList
 
 
 def create_weeklyList(inicial, final):
-    #Calcula intervalo de semanas e cria e preenche uma lista desses n elementos com zero (0)
+    # Calcula intervalo de semanas e cria
+    # preenche uma lista desses n elementos com zero (0)
     weeklyList = []
     inicial = inicial.isocalendar()[1]
     final = final.isocalendar()[1]
     amountWeeks = final - inicial
-    for x in range(amountWeeks):
+    # Acrescenta 1 no amountweek para contar a PROPRIA semana
+    for x in range(amountWeeks+1):
         weeklyList.append(0)
-    print (inicial)
     return weeklyList,inicial
 
 
 def loadErikaLog(file_,studentsNames,inicial_str,final_str):
-    #Recebe uma lista com nomes dos alunos EM MAIUSCULA
-    #Devolve uma lista apenas com os estudantes e suas infos das participações no forum de duvidas
+    # Recebe uma lista com nomes dos alunos EM MAIUSCULA
+    # Devolve uma lista apenas com os estudantes e
+    # suas infos das participações no forum de duvidas
     studentsList = []
     names=["Nome completo"]
+    # Converte as datas para DateTime
     inicial = convert_to_datetime(inicial_str)
     final = convert_to_datetime(final_str)
     if not file_:
