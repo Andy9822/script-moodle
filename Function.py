@@ -185,13 +185,14 @@ def name_in_Aluno(Alunos,name):
     return False
 
 
-def numWeeklyPosts(weeklyList,date_str,inicial):
+def numWeeklyPosts(weeklyList,date_str,inicial,final):
     # Recebe a data do post e calcula em qual semana foi postado
     # para preencher na semana correspondente na lista
     date = convert_to_datetime(date_str)
-    date = date.isocalendar()[1] - inicial
-    # -1 Porque o indice é sempre 1 menor
-    weeklyList[date-1] += 1
+    date = date.isocalendar()[1]
+    date = date - inicial
+    if date>= 0 and date <= (final-inicial):
+        weeklyList[date] += 1
     return weeklyList
 
 
@@ -205,7 +206,8 @@ def create_weeklyList(inicial, final):
     # Acrescenta 1 no amountweek para contar a PROPRIA semana
     for x in range(amountWeeks+1):
         weeklyList.append(0)
-    return weeklyList,inicial
+    print(len(weeklyList))
+    return weeklyList,inicial,final
 
 
 def loadErikaLog(file_,studentsNames,inicial_str,final_str):
@@ -222,7 +224,7 @@ def loadErikaLog(file_,studentsNames,inicial_str,final_str):
     else:
         #Se foi passado um intervalo de tempo, precisa ser criada lista de posts por semana
         if inicial:
-            weeklyList, inicial =  create_weeklyList(inicial,final)
+            weeklyList, inicial,final =  create_weeklyList(inicial,final)
         # Faz um for ignorando a primeira linha
         for linha in xlread(file_):
             if not linha[1] in names:
@@ -240,7 +242,7 @@ def loadErikaLog(file_,studentsNames,inicial_str,final_str):
                             mensagem = 1
                             #Se foi passado um intervalo de tempo, precisa ser atualizada lista de posts por semana
                             if inicial:
-                                weeklyList = numWeeklyPosts(weeklyList,data_splited[0],inicial)
+                                weeklyList = numWeeklyPosts(weeklyList,data_splited[0],inicial,final)
                         if participa == 0 and mensagem == 0:
                             data_splited = ["01/01/9999"]
                         studentsList.append(Aluno(linha[1],mensagem,participa,convert_to_datetime(data_splited[0])))
@@ -255,7 +257,7 @@ def loadErikaLog(file_,studentsNames,inicial_str,final_str):
                                     x.numParticipations += 1
                                     #Se foi passado um intervalo de tempo, precisa ser atualizada lista de posts por semana
                                     if inicial:
-                                        weeklyList = numWeeklyPosts(weeklyList,data_splited[0],inicial)
+                                        weeklyList = numWeeklyPosts(weeklyList,data_splited[0],inicial,final)
                                     if convert_to_datetime(data_splited[0]) < x.firstPost:
                                         #Se data eh menor que a de antes, pega essa nova
                                         x.firstPost = convert_to_datetime(data_splited[0])
