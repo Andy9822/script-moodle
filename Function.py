@@ -56,32 +56,32 @@ def create_and_plot_bar(log):
     plotgraph_bar(people,number)
     return dic
 
-def create_and_plot_lines(log,names):
+def create_and_plot_lines(weeklylist):
     # Plota o gráfico em linhas (bom para saber por dias)
-    # Recebe o log e divide em 2 listas
-    if not names:
-        days,numbers = create_list(log)
-        # Inverte as listas para ficar em ordem crescente
-        days.reverse()
-        numbers.reverse()
-        # Seta o X e Y para arrays de numeros
-        x = np.array(range(len(days)))
-        y = np.array(numbers)
-        # Pega as datas para colocar em baixo
-        my_xticks = days
-        #plt.figure(figsize=(30,10))
-        # esse 1.0 é a distancia entre eles, se aumentar não vai plotar todos
-        plt.xticks(np.arange(min(x), max(x)+1,1.0),my_xticks, rotation=290, size = 13)
-        #plt.locator_params(axis='x',nbins=45)
-        plt.ylabel('Número de acessos')
-        plt.title('Todas as pessoas no log')
-        # Colore o grafico
-        with plt.style.context('fivethirtyeight'):
-            # Titulo do grafico
-            plt.plot(x,y,label = 'Everyone')
-            plt.legend()
-            plt.show()
-
+    # Inverte as listas para ficar em ordem crescente
+    semanas=[]
+    # Cria um array de strings com os NUMEROS DAS SEMANAS
+    for x in range(len(weeklylist)):
+        semanas.append("Semana "+str(x+1))
+    # Seta o X e Y para arrays de numeros
+    x = np.array(range(len(weeklylist)))
+    y = np.array(weeklylist)
+    # Pega as semanas para colocar em baixo
+    my_xticks = semanas
+    #plt.figure(figsize=(30,10))
+    # esse 1.0 é a distancia entre eles, se aumentar não vai plotar todos
+    plt.xticks(np.arange(min(x), max(x)+1,1.0),my_xticks, rotation=40, size = 13)
+    #plt.locator_params(axis='x',nbins=45)
+    plt.ylabel('Number of entries')
+    plt.title('All the students')
+    # Colore o grafico
+    with plt.style.context('fivethirtyeight'):
+        # Titulo do grafico
+        plt.plot(x,y,label = 'Everyone')
+        plt.legend()
+        plt.show()
+# FUNÇÃO COMENTADO, FAZ VARIOS GRAFOS
+"""
     else:
         # Se tiver algo no names
         people=[]
@@ -123,8 +123,7 @@ def create_and_plot_lines(log,names):
                 plt.plot(x,y,label = names[i])
         # Vai mostrar o que foi plotado
         plt.legend()
-        plt.show()
-
+        plt.show()"""
 def plotgraph_bar(people,number):
     plt.rcdefaults()
     # Peoples e Number já estão atualizados e ordenados
@@ -156,8 +155,13 @@ def amount_interactions(Alunos):
     return sent,not_sent
 
 def which_participate(Alunos):
+    # Devolve uma lista de Alunos que tiveram pelo menos UMA participação
+    Epic_Alunos = []
     for x in Alunos:
-        if x.
+        if x.numParticipations > 0:
+            Epic_Alunos.append(x)
+    return Epic_Alunos
+
 #--------------------------- CONSISTÊNCIAS ------------------------------------#
 def names_excel(file_):
     # Dado um arquivo excel no formato [w/e][w/e][Nome]....[w/e]
@@ -271,11 +275,13 @@ namelist = names_excel(file_)
 file_ =  filedialog.askopenfilename()
 studentslist = loadErikaLog(file_,namelist)
 amount_interactions(studentslist)
+which_participate(studentslist)
 for x in studentslist:
     print (x.personName)
     print (x.numMessages)
     print (x.numParticipations)
     print (x.firstPost)
+
 
 #---------------------------------------FUNCTIONS MENU-------------------------#
 def menu_print_options_graph():
@@ -438,7 +444,6 @@ def mainMenuGraph(file_,log,filterOption,names,inicial,final):
             create_and_plot_lines(log_filtered,names)
     else:
         print("Log vazio\nNao tem nada nesse intervalo c as especificacoes passadas")
-
 
 # ''
 ###########################################################################################
