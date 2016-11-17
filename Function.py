@@ -124,17 +124,23 @@ def create_and_plot_lines(weeklylist):
         # Vai mostrar o que foi plotado
         plt.legend()
         plt.show()"""
-def plotgraph_bar(people,number):
+def plotgraph_bar(Alunos):
+    number = []
+    people = []
+    for x in Alunos:
+        number.append(x.numParticipations)
+        people.append(x.personName[:15])
     plt.rcdefaults()
     # Peoples e Number já estão atualizados e ordenados
     y_pos = np.arange(len(people))
     # Number = os numeros de cada people
     error = np.random.rand(len(people))
     #plt.figure(figsize=(30,10))
-    plt.barh(y_pos, number,0.8, align='center', alpha=0.5)
-    plt.yticks(y_pos, people)
-    plt.xlabel('Perguntas')
-    plt.title('Quantia de visitas ao fórum')
+    with plt.style.context('fivethirtyeight'):
+        plt.barh(y_pos, number,1, align='center', alpha=0.5)
+        plt.yticks(y_pos, people,size = 9)
+        plt.xlabel('Participações')
+        plt.title('Quantia de visitas ao fórum')
     plt.show()
 
 def convert_to_datetime(date_string):
@@ -206,7 +212,6 @@ def create_weeklyList(inicial, final):
     # Acrescenta 1 no amountweek para contar a PROPRIA semana
     for x in range(amountWeeks+1):
         weeklyList.append(0)
-    print(len(weeklyList))
     return weeklyList,inicial,final
 
 
@@ -307,153 +312,57 @@ class Aluno:
         self.numParticipations = numParticipations
         self.firstPost =  firstPost
 
-file_ =  filedialog.askopenfilename()
-namelist = names_excel(file_)
-
-file_ =  filedialog.askopenfilename()
-studentslist,weeklyList = loadErikaLog(file_,namelist,"02/08/2016","02/11/2016")
-amount_interactions(studentslist)
-which_participate(studentslist)
-"""for x in studentslist:
-    print (x.personName)
-    print (x.numMessages)
-    print (x.numParticipations)
-    print (x.firstPost)"""
-create_and_plot_lines(weeklyList)
-
 #---------------------------------------FUNCTIONS MENU-------------------------#
-def menu_print_options_graph():
+def menu_options():
     print("""
     Choose the GRAPH
-    1. Bars
-    2. Lines
+    1. Quantos enviaram pergunta e não enviaram?
+    2. Para cada aluno que participou, quantas vezes cada alunou participou?
+    3. Para cada aluno que participou, qual foi sua primeira participação?
+    4. Número de perguntas por semana.
+    5. Quais alunos participaram ao longo do semestre?
+    0. Sair
     """)
-
-def menu_prints_options_with_or_without():
-    print ("""
-    1. Plot without filter
-    2. Plot a graph with filter
-    0. Exit
-    """)
-
-def menu_prints_options_filter():
-    print("""
-    1. Filter the people
-    2. Filter the days
-    3. Filter both """)
-
-def menu_filter_names(log):
-    naming = True
-
-    while naming:
-        names.append(input("""
-        Insert the name: """).upper())
-        naming=input("""
-        1. One more time
-        0. Leave
-        Continue? """)
-        if naming == '0':
-            if testNameInLog(log,names):
-                naming=False
-            else:
-                print ("""\n        No one is in the log, please insert someone who is in the log""")
-    # Filtra o log com os nomes
-    log_filtered=filter_names(log,names)
-    return log_filtered,names
-
-def menu_filter_namesGUI(log,names):
-    if testNameInLog(log,names):
-        log=filter_names(log,names)
-    else:
-        print ("""\nNo one is in the log, will be considerated all the people """)
-    return log
-
-def menu_filter_days(log):
-    inserindo=True
-    while inserindo:
-        print ("""
-        Format: DAY/MONTH/YEAR""")
-        # Recebe os dois strings
-        first=str(input("        First Day "))
-        last=str(input("        Last Day "))
-        # Testa se são do formato desejado, caso não continua no loop
-        if is_date(first) and is_date(last):
-            first=convert_to_datetime(first)
-            last=convert_to_datetime(last)
-            inserindo=False
-        else:
-            print("""\n        Alguma data foi no formato errado""")
-    # Filtra o log
-    log_filtered=filter_days(log,first,last)
-    return log_filtered
-
-def menu_filter_days_names(log):
-    names=[]
-    log_filtered=menu_filter_days(log)
-    log_filtered,names=menu_filter_names(log_filtered)
-    return log_filtered,names
 
 #--------------------------MENU do pai vianna----------------------------------#
 def menuXuxu():
-    #Define uma constante para arquivo
+    print("ESCOLHA O EXCEL COM OS NOMES")
     file_ =  filedialog.askopenfilename()
-    #file_ = "C:\\Users\\leona\\Desktop\\Script\\script-moodle\\logs.xlsx"
-    if file_ == False:
-        print("Nenhum arquivo achado")
-    else:
-        log=load_log(file_)
-        menu_1 = True
-        while menu_1:
-            menu_prints_options_with_or_without() # 1- Sem, 2 - Com, 0 - Sair
-            opt_menu_1 = input("        Choose W/OUT: ")
-            # Inicializa variavel
-            names=[]
-            if opt_menu_1 == '1':
-                # Inicializa log_filtered
-                log_filtered=log
-            elif opt_menu_1 == '2':
-                menu_2 = True
-                while menu_2:
-                    menu_prints_options_filter()    # 1 - Pessoas, 2 - Dias, 3 - Ambos
-                    opt_menu_2 = input("        Choose Filter: ")
-                    if opt_menu_2 == '1':
-                        log_filtered,names= menu_filter_names(log)
-                        # Sai desse menu_2 caso tenha acertado a opção
-                        menu_2 = False
-                    elif opt_menu_2 == '2':
-                        log_filtered = menu_filter_days(log)
-                        # Sai desse menu_2 caso tenha acertado a opção
-                        menu_2 = False
-                    elif opt_menu_2 == '3':
-                        log_filtered,names= menu_filter_days_names(log)
-                        # Sai desse menu_2 caso tenha acertado a opção
-                        menu_2 = False
-                    else:
-                        print("        Opção não encontrada")
-                        # Fica no menu se errar
-            menu_3 = True
-            if opt_menu_1 == '0':
-                # Sai do menu e do programa consequentemente
-                menu_1 = False
-                menu_3 = False
-            elif opt_menu_1 != '1' and opt_menu_1 != '2' and opt_menu_1 != '0':
-                print("        Opção não encontrada")
-                menu_3 = False
-            while menu_3:
-                menu_print_options_graph() # 1 - Bars, 2 - Lines
-                opt_menu_3 = input("        Choose Graph: ")
-                if opt_menu_3 == '1':
-                    # Se escolheu BARS plota BAR
-                    create_and_plot_bar(log_filtered)
-                    # Sai do menu_3
-                    menu_3 = False
-                elif opt_menu_3 == '2':
-                    # Se escolheu LINES plota LINES
-                    create_and_plot_lines(log_filtered,names)
-                    # Sai do menu_3
-                    menu_3 = False
-#-------------------- MENU  Graphical User Interface --------------------------#
+    namelist = names_excel(file_)
+    print("ESCOLA O EXCEL COM O LOG")
+    file_ =  filedialog.askopenfilename()
+    studentslist,weeklyList = loadErikaLog(file_,namelist,"02/08/2016","02/11/2016")
 
+    loop = True
+    sent,not_sent=amount_interactions(studentslist)
+    participate=which_participate(studentslist)
+    while(loop):
+        menu_options()
+        option = input("Escolha: ")
+        if option == '1':
+            print("Quantia que acessou: " ,sent)
+            print("Quantia que não acessou: ",not_sent)
+        elif option == '2':
+            for x in participate:
+                print (str(x.personName) + ("\nMensagens: ") + str(x.numMessages) + (" Participações: ") + str(x.numParticipations))
+                print('\n\n')
+            plotgraph_bar(participate)
+        elif option == '3':
+            for x in participate:
+                print (str(x.personName) + ("\nFirst post: ") + str(x.firstPost))
+                print('\n\n')
+        elif option == '4':
+            create_and_plot_lines(weeklyList)
+        elif option == '5':
+            for x in participate:
+                print (("Participou: ") + str(x.personName))
+        elif option == '0':
+            loop = False
+        else:
+            print ("Opção não encontrada")
+
+#-------------------- MENU  Graphical User Interface --------------------------#
+menuXuxu()
 # Define uma constante para arquivo
 #file_ =  filedialog.askopenfilename()
 #file_ = "C:\\Users\\leona\\Desktop\\Script\\script-moodle\\logs.xlsx"
