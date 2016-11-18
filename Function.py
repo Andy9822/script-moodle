@@ -47,6 +47,13 @@ def how_visua_day_name(log,day,name):
                 a=a+1
     return a
 
+def make_autopct(values):
+    def my_autopct(pct):
+        total = sum(values)
+        val = int(round(pct*total/100.0))
+        return '{p:.2f}%  ({v:d})'.format(p=pct,v=val)
+    return my_autopct
+
 def pieChart(notSent,sent,see,write_see):
     # Data to plot
     explode1 = (0,0)
@@ -68,9 +75,9 @@ def pieChart(notSent,sent,see,write_see):
         explode2 = (0, 0.1)
 
     # Plot
-    plt.pie(sizes, explode=explode1,  colors=colors2,autopct='%1.1f%%', shadow=True, startangle=90,radius=1.65, center = (-2.5,0))
+    plt.pie(sizes, explode=explode1,  colors=colors2,autopct=make_autopct(sizes), shadow=True, startangle=90,radius=1.65, center = (-2.5,0))
 
-    plt.pie(sizes2, explode=explode2,  colors=colors,autopct='%1.1f%%', shadow=True, startangle=45,radius=1.65, center = (2.5,0))
+    plt.pie(sizes2, explode=explode2,  colors=colors,autopct=make_autopct(sizes2), shadow=True, startangle=45,radius=1.65, center = (2.5,0))
 
 
 
