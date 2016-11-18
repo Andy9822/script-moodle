@@ -16,6 +16,7 @@ from matplotlib.cbook import get_sample_data
 import re
 import math
 import pylab as pl
+import matplotlib.patches as mpatches
 
 def xlread(arq_xls):
     # Abre o arquivo
@@ -45,6 +46,43 @@ def how_visua_day_name(log,day,name):
             if log[linha].name == name:
                 a=a+1
     return a
+
+def pieChart(notSent,sent,see,write_see):
+    # Data to plot
+    explode1 = (0,0)
+    explode2 = explode1
+    labels = 'Participaram', 'Não participaram'
+    sizes = [sent, notSent]
+    colors = ['gold', 'yellowgreen']
+    if  sent>notSent:
+        explode1 = (0.1, 0)
+    elif notSent>sent:      # explode biggest slice
+        explode1 = (0, 0.1)
+
+    labels2 = 'Só visualizam dúvidas alheias', 'Mandaram e visualizam'
+    sizes2 = [see, write_see]
+    colors2 = ['lightskyblue', 'lightcoral']
+    if  see>write_see:
+        explode2 = (0.1, 0)
+    elif write_see>see:      # explode biggest slice
+        explode2 = (0, 0.1)
+
+    # Plot
+    plt.pie(sizes, explode=explode1,  colors=colors2,autopct='%1.1f%%', shadow=True, startangle=90,radius=1.65, center = (-2.5,0))
+
+    plt.pie(sizes2, explode=explode2,  colors=colors,autopct='%1.1f%%', shadow=True, startangle=45,radius=1.65, center = (2.5,0))
+
+
+
+
+    first_legend = plt.legend(labels,loc = 2)
+    ax = plt.gca().add_artist(first_legend)
+    second_legend = plt.legend(labels2,loc = 4,ncol=1)
+
+
+
+    plt.axis('equal')
+    plt.show()
 
 def create_and_plot_bar(log):
     # Cria o dicionary e plota o grafico em forma de barras (bom para saber por pessoa)
@@ -148,6 +186,25 @@ def convert_to_datetime(date_string):
     # Recebe apenas a data com o comando. date
     date_object = datetime.strptime(date_string,"%d/%m/%Y").date()
     return date_object
+
+def amount_interactions_pieChart(Alunos):
+    # Dado uma lista de Alunos retorna quantos participaram e quantos nã
+    #Tambem quantos só visualizaram posts e quantos mandaram perguntas tb
+    participate = 0
+    nonParticipate = 0
+    justSee = 0
+    writeSee = 0
+    for x in Alunos:
+        if x.numMessages > 0 and x.numParticipations > 0:
+            participate += 1
+            writeSee +=1
+        elif x.numParticipations > 0:
+            justSee +=1
+            participate +=1
+        else:
+            nonParticipate +=1
+
+    return participate,nonParticipate,justSee,writeSee
 
 def amount_interactions(Alunos):
     # Dado uma lista de Alunos retorna quantos enviaram mensagens
@@ -316,7 +373,7 @@ class Aluno:
 def menu_options():
     print("""
     Choose the GRAPH
-    1. Quantos enviaram pergunta e não enviaram?
+    1. Quantos participaram e como participaram?
     2. Para cada aluno que participou, quantas vezes cada alunou participou?
     3. Para cada aluno que participou, qual foi sua primeira participação?
     4. Número de perguntas por semana.
@@ -335,6 +392,9 @@ def menuXuxu():
 
     loop = True
     sent,not_sent=amount_interactions(studentslist)
+    #pie chart
+    Yesparticipate,nonParticipate,justSee,writeSee = amount_interactions_pieChart(studentslist)
+
     participate=which_participate(studentslist)
     while(loop):
         menu_options()
@@ -342,6 +402,7 @@ def menuXuxu():
         if option == '1':
             print("Quantia que acessou: " ,sent)
             print("Quantia que não acessou: ",not_sent)
+            pieChart(nonParticipate,Yesparticipate,justSee,writeSee)
         elif option == '2':
             for x in participate:
                 print (str(x.personName) + ("\nMensagens: ") + str(x.numMessages) + (" Participações: ") + str(x.numParticipations))
@@ -362,7 +423,6 @@ def menuXuxu():
             print ("Opção não encontrada")
 
 #-------------------- MENU  Graphical User Interface --------------------------#
-menuXuxu()
 # Define uma constante para arquivo
 #file_ =  filedialog.askopenfilename()
 #file_ = "C:\\Users\\leona\\Desktop\\Script\\script-moodle\\logs.xlsx"
@@ -623,14 +683,13 @@ def menuAndy():
     window.mainloop()
 
 
-qualMenu = input("1 para menu em CMD(ou y ou yes ou Y)\nQualquer outra coisa para menu em GUI\n")
-
-if qualMenu == "1" or  qualMenu == "y" or qualMenu == "yes" or qualMenu == "Y"  :
-    menuXuxu()
-else:
-    menuAndy()
 
 
 
 
 #--------------------------------------------- PLOT GRAPH ------------------------------------#
+
+
+# Main que chama menu xuxu
+
+menuXuxu()
