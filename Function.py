@@ -194,6 +194,32 @@ def convert_to_datetime(date_string):
     date_object = datetime.strptime(date_string,"%d/%m/%Y").date()
     return date_object
 
+def analyze_interaction(phrase,date):
+    #Quando um novo aluno aparece, se analiza essa nova interacao do novo aluno
+    participa = 0
+    mensagem = 0
+    if phrase == "Discussão visualizada":
+        participa = 1
+    elif phrase == "Algum conteúdo foi publicado" :
+        participa = 1
+        mensagem = 1
+    if participa == 0 and mensagem == 0:
+        date = ["01/01/9999"]
+
+    return mensagem,participa,date
+
+def update_interaction(phrase):
+    #Para alunos que ja interagiram, apenas se atualiza esse novo tipo de interacao
+    participa = 0
+    mensagem = 0
+    if phrase == "Discussão visualizada":
+        participa = 1
+    elif phrase == "Algum conteúdo foi publicado" :
+        participa = 1
+        mensagem = 1
+    return mensagem,participa
+
+
 def amount_interactions_pieChart(Alunos):
     # Dado uma lista de Alunos retorna quantos participaram e quantos nã
     #Tambem quantos só visualizaram posts e quantos mandaram perguntas tb
@@ -255,7 +281,7 @@ def name_in_Aluno(Alunos,name):
     return False
 
 
-def numWeeklyPosts(weeklyList,date_str,inicial,final):
+def updateWeeklyPosts(weeklyList,date_str,inicial,final):
     # Recebe a data do post e calcula em qual semana foi postado
     # para preencher na semana correspondente na lista
     date = convert_to_datetime(date_str)
@@ -280,9 +306,8 @@ def create_weeklyList(inicial, final):
 
 
 def loadErikaLog(file_,studentsNames,inicial_str,final_str):
-    # Recebe uma lista com nomes dos alunos EM MAIUSCULA
-    # Devolve uma lista apenas com os estudantes e
-    # suas infos das participações no forum de duvidas
+    # Recebe uma lista com nomes dos alunos para filtrar o log gerado pelo Moodle e pode receber um intervalo definido de datas para a consulta das infos
+    # Devolve uma lista  com os estudantes e suas infos das participações no forum de duvidas e uma lista com o numero de postagens por semana
     studentsList = []
     names=["Nome completo"]
     # Converte as datas para DateTime
@@ -294,48 +319,31 @@ def loadErikaLog(file_,studentsNames,inicial_str,final_str):
         #Se foi passado um intervalo de tempo, precisa ser criada lista de posts por semana
         if inicial:
             weeklyList, inicial,final =  create_weeklyList(inicial,final)
-        # Faz um for ignorando a primeira linha
         for linha in xlread(file_):
             if not linha[1] in names:
                 data_splited=(linha[0].split(' '))
-                #Testa se pessoa da vez eh um estudante e precisa ser tratado
                 if linha[1] in studentsNames:
+                    #Testa se pessoa da vez eh um estudante e precisa ser tratado
                     if not name_in_Aluno(studentsList,linha[1]):
-                        #Se eh um mane novo nois so adiciona ele mesmo
-                        participa = 0
-                        mensagem = 0
-                        if linha[5] == "Discussão visualizada":
-                            participa = 1
-                        elif linha[5] == "Algum conteúdo foi publicado" :
-                            participa = 1
-                            mensagem = 1
-                            #Se foi passado um intervalo de tempo, precisa ser atualizada lista de posts por semana
-                            if inicial:
-                                weeklyList = numWeeklyPosts(weeklyList,data_splited[0],inicial,final)
-                        if participa == 0 and mensagem == 0:
-                            data_splited = ["01/01/9999"]
-                        studentsList.append(Aluno(linha[1],mensagem,participa,convert_to_datetime(data_splited[0])))
-                    #Antes de fazer append verifica se nessa primeira aparicao dele ele ja interagiu
-                    elif name_in_Aluno(studentsList,linha[1]):
+                        #Se eh um novo estudante, analiza tipo de interacao
+                        newMessages,newParticipations,data_splited = analyze_interaction(linha[5],data_splited)
+                        #Se foi passado um intervalo de tempo e criou um post, precisa ser atualizada lista de posts por semana
+                        if inicial and newMessages:
+                            weeklyList = updateWeeklyPosts(weeklyList,data_splited[0],inicial,final)
+                        studentsList.append(Aluno(linha[1],newMessages,newParticipations,convert_to_datetime(data_splited[0])))
+                    else:
                         #Nao eh primeira vez do student, tem que ver se precisa atualizar alguma coisa
                         for x in studentsList:
                             if x.personName == linha[1]:
-                                if linha[5] == "Algum conteúdo foi publicado" :
-                                    #Se publicou conteudo, é mensagem a mais e participacao a mais (!!!!!!!talvez desconsiderar participacao e ser so mensagem !!!!!!)
-                                    x.numMessages += 1
-                                    x.numParticipations += 1
-                                    #Se foi passado um intervalo de tempo, precisa ser atualizada lista de posts por semana
-                                    if inicial:
-                                        weeklyList = numWeeklyPosts(weeklyList,data_splited[0],inicial,final)
-                                    if convert_to_datetime(data_splited[0]) < x.firstPost:
-                                        #Se data eh menor que a de antes, pega essa nova
-                                        x.firstPost = convert_to_datetime(data_splited[0])
-                                elif linha[5] == "Discussão visualizada":
-                                    #Se eh so discussao visualizada, so add participacao por ter visto perguntas de coleguinhas
-                                    x.numParticipations += 1
-                                    if convert_to_datetime(data_splited[0]) < x.firstPost:
-                                        #Se data eh menor que a de antes, pega essa nova
-                                        x.firstPost = convert_to_datetime(data_splited[0])
+                                newMessage,newParticipations = update_interaction(linha[5])
+                                x.numMessages += newMessage
+                                x.numParticipations += newParticipations
+                                #Se foi passado um intervalo de tempo e aluno criou um post, precisa ser atualizada lista de posts por semana
+                                if inicial and newMessage:
+                                    weeklyList = updateWeeklyPosts(weeklyList,data_splited[0],inicial,final)
+                                #Se data eh menor que a de antes, pega essa nova
+                                if convert_to_datetime(data_splited[0]) < x.firstPost:
+                                    x.firstPost = convert_to_datetime(data_splited[0])
         return studentsList,weeklyList
 
 def is_date(string):
@@ -349,13 +357,6 @@ def is_date(string):
     else:
         False
 
-def testNameInLog(log,names):
-    # Retorna true se tem apariçao"de "name" no log passado
-    # Verifica linha por linha se tem alguém com o mesmo nome, se tiver seta como true
-    for x in range(len(names)):
-        if how_visua_name(log,names[x]) != 0:
-            return True
-    return False
 
 class Champion:
     def __init__(self, date, name, affected, component, context, event, description, source, ip):
@@ -387,16 +388,17 @@ def menu_options():
     5. Quais alunos participaram ao longo do semestre?
     0. Sair
     """)
-
 #--------------------------MENU do pai vianna----------------------------------#
 def menuXuxu():
+    root = Tk()
+    root.withdraw()
     print("ESCOLHA O EXCEL COM OS NOMES")
     file_ =  filedialog.askopenfilename()
     namelist = names_excel(file_)
-    print("ESCOLA O EXCEL COM O LOG")
+    print("ESCOLHA O EXCEL COM O LOG")
     file_ =  filedialog.askopenfilename()
     studentslist,weeklyList = loadErikaLog(file_,namelist,"02/08/2016","02/11/2016")
-
+    root.destroy()
     loop = True
     sent,not_sent=amount_interactions(studentslist)
     #pie chart
