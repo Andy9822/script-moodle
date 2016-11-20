@@ -58,36 +58,34 @@ def pieChart(notSent,sent,see,write_see):
     # Data to plot
     explode1 = (0,0)
     explode2 = explode1
-    labels = 'Participaram', 'Não participaram'
+
+    colors = ['lightskyblue', 'lightcoral']
     sizes = [sent, notSent]
-    colors = ['gold', 'yellowgreen']
+    colors2 = ['gold', 'yellowgreen']
+    sizes2 = [see, write_see]
+
     if  sent>notSent:
         explode1 = (0.1, 0)
     elif notSent>sent:      # explode biggest slice
         explode1 = (0, 0.1)
 
-    labels2 = 'Só visualizam dúvidas alheias', 'Mandaram e visualizam'
-    sizes2 = [see, write_see]
-    colors2 = ['lightskyblue', 'lightcoral']
     if  see>write_see:
         explode2 = (0.1, 0)
     elif write_see>see:      # explode biggest slice
         explode2 = (0, 0.1)
 
+    # Seto a cor e o nome de cada legenda forçadamente
+    first_legend = mpatches.Patch(color='lightskyblue',label = 'Participaram')
+    second_legend = mpatches.Patch(color = 'lightcoral', label = 'Não participaram')
+    third_legend = mpatches.Patch(color='gold', label ='Só visualizam dúvidas alheias')
+    fourth_legend = mpatches.Patch(color='yellowgreen', label ='Mandaram e visualizam')
     # Plot
-    plt.pie(sizes, explode=explode1,  colors=colors2,autopct=make_autopct(sizes), shadow=True, startangle=90,radius=1.65, center = (-2.5,0))
+    plt.pie(sizes, explode=explode1,  colors=colors,autopct=make_autopct(sizes), shadow=True, startangle=90,radius=1.65, center = (-2.5,0))
+    plt.pie(sizes2, explode=explode2,  colors=colors2,autopct=make_autopct(sizes2), shadow=True, startangle=45,radius=1.65, center = (2.5,0))
 
-    plt.pie(sizes2, explode=explode2,  colors=colors,autopct=make_autopct(sizes2), shadow=True, startangle=45,radius=1.65, center = (2.5,0))
-
-
-
-
-    first_legend = plt.legend(labels,loc = 2)
-    ax = plt.gca().add_artist(first_legend)
-    second_legend = plt.legend(labels2,loc = 4,ncol=1)
-
-
-
+    # Ploto as legendas forçadas
+    plt.gca().add_artist(plt.legend(handles=[first_legend,second_legend],loc = 2))
+    plt.legend(handles=[third_legend,fourth_legend],loc = 4)
     plt.axis('equal')
     plt.show()
 
@@ -169,6 +167,7 @@ def create_and_plot_lines(weeklylist):
         # Vai mostrar o que foi plotado
         plt.legend()
         plt.show()"""
+
 def plotgraph_bar(Alunos):
     number = []
     people = []
@@ -239,7 +238,7 @@ def amount_interactions_pieChart(Alunos):
 
     return participate,nonParticipate,justSee,writeSee
 
-def amount_interactions(Alunos):
+def amount_messages(Alunos):
     # Dado uma lista de Alunos retorna quantos enviaram mensagens
     # E quantos não enviaram
     sent = 0
@@ -252,11 +251,14 @@ def amount_interactions(Alunos):
 
 def which_participate(Alunos):
     # Devolve uma lista de Alunos que tiveram pelo menos UMA participação
-    Epic_Alunos = []
+    Epic_Students = []
+    Poor_Students = []
     for x in Alunos:
         if x.numParticipations > 0:
-            Epic_Alunos.append(x)
-    return Epic_Alunos
+            Epic_Students.append(x)
+        else:
+            Poor_Students.append(x)
+    return Epic_Students,Poor_Students
 
 #--------------------------- CONSISTÊNCIAS ------------------------------------#
 def names_excel(file_):
@@ -344,6 +346,9 @@ def loadErikaLog(file_,studentsNames,inicial_str,final_str):
                                 #Se data eh menor que a de antes, pega essa nova
                                 if convert_to_datetime(data_splited[0]) < x.firstPost:
                                     x.firstPost = convert_to_datetime(data_splited[0])
+            for name in studentsNames:
+                if not name_in_Aluno(studentsList,name):
+                    studentsList.append(Aluno(name,0,0,convert_to_datetime("01/01/9999")))
         return studentsList,weeklyList
 
 def is_date(string):
@@ -357,19 +362,6 @@ def is_date(string):
     else:
         False
 
-
-class Champion:
-    def __init__(self, date, name, affected, component, context, event, description, source, ip):
-        self.date = date
-        self.name = name
-        self.affected = affected
-        self.component = component
-        self.context = context
-        self.event = event
-        self.description = description
-        self.source = source
-        self.ip = ip
-
 class Aluno:
     def __init__(self,personName,numMessages,numParticipations,firstPost):
         self.personName = personName
@@ -381,7 +373,7 @@ class Aluno:
 def menu_options():
     print("""
     Choose the GRAPH
-    1. Quantos participaram e como participaram?
+    1. Quantos enviaram mensagem e não enviaram? Gráfico
     2. Para cada aluno que participou, quantas vezes cada alunou participou?
     3. Para cada aluno que participou, qual foi sua primeira participação?
     4. Número de perguntas por semana.
@@ -392,25 +384,27 @@ def menu_options():
 def menuXuxu():
     root = Tk()
     root.withdraw()
+
     print("ESCOLHA O EXCEL COM OS NOMES")
     file_ =  filedialog.askopenfilename()
     namelist = names_excel(file_)
     print("ESCOLHA O EXCEL COM O LOG")
     file_ =  filedialog.askopenfilename()
-    studentslist,weeklyList = loadErikaLog(file_,namelist,"02/08/2016","02/11/2016")
     root.destroy()
-    loop = True
-    sent,not_sent=amount_interactions(studentslist)
+
+    studentslist,weeklyList = loadErikaLog(file_,namelist,"02/08/2016","02/11/2016")
+    sent,not_sent=amount_messages(studentslist)
+    participate,notparticipate=which_participate(studentslist)
     #pie chart
     Yesparticipate,nonParticipate,justSee,writeSee = amount_interactions_pieChart(studentslist)
 
-    participate=which_participate(studentslist)
+    loop = True
     while(loop):
         menu_options()
         option = input("Escolha: ")
         if option == '1':
-            print("Quantia que acessou: " ,sent)
-            print("Quantia que não acessou: ",not_sent)
+            print("Quantia que enviou mensagem: " ,sent)
+            print("Quantia que não enviou: ",not_sent)
             pieChart(nonParticipate,Yesparticipate,justSee,writeSee)
         elif option == '2':
             for x in participate:
@@ -426,6 +420,9 @@ def menuXuxu():
         elif option == '5':
             for x in participate:
                 print (("Participou: ") + str(x.personName))
+            print ("\n")
+            for x in notparticipate:
+                print (("Não participou: ") + str (x.personName))
         elif option == '0':
             loop = False
         else:
