@@ -81,13 +81,14 @@ def pieChart(notSent,sent,see,write_see):
     third_legend = mpatches.Patch(color='gold', label ='Só visualizam dúvidas alheias')
     fourth_legend = mpatches.Patch(color='yellowgreen', label ='Mandaram e visualizam')
     # Plot
-    plt.pie(sizes, explode=explode1,  colors=colors,autopct=make_autopct(sizes), shadow=True, startangle=90,radius=1.65, center = (-2.5,0))
-    plt.pie(sizes2, explode=explode2,  colors=colors2,autopct=make_autopct(sizes2), shadow=True, startangle=45,radius=1.65, center = (2.5,0))
+    with plt.style.context('fivethirtyeight'):
+        plt.pie(sizes, explode=explode1,  colors=colors,autopct=make_autopct(sizes), shadow=True, startangle=90,radius=1.65, center = (-2.5,0))
+        plt.pie(sizes2, explode=explode2,  colors=colors2,autopct=make_autopct(sizes2), shadow=True, startangle=45,radius=1.65, center = (2.5,0))
 
     # Ploto as legendas forçadas
-    plt.gca().add_artist(plt.legend(handles=[first_legend,second_legend],loc = 2))
-    plt.legend(handles=[third_legend,fourth_legend],loc = 4)
-    plt.axis('equal')
+        plt.gca().add_artist(plt.legend(handles=[first_legend,second_legend],loc = 2))
+        plt.legend(handles=[third_legend,fourth_legend],loc = 4)
+        plt.axis('equal')
     plt.show()
 
 def create_and_plot_bar(log):
