@@ -18,7 +18,6 @@ import re
 import math
 import pylab as pl
 import matplotlib.patches as mpatches
-import sys
 
 def xlread(arq_xls):
     # Abre o arquivo
@@ -82,14 +81,13 @@ def pieChart(notSent,sent,see,write_see):
     third_legend = mpatches.Patch(color='gold', label ='Só visualizam dúvidas alheias')
     fourth_legend = mpatches.Patch(color='yellowgreen', label ='Mandaram e visualizam')
     # Plot
-    with plt.style.context('fivethirtyeight'):
-        plt.pie(sizes, explode=explode1,  colors=colors,autopct=make_autopct(sizes), shadow=True, startangle=90,radius=1.65, center = (-2.5,0))
-        plt.pie(sizes2, explode=explode2,  colors=colors2,autopct=make_autopct(sizes2), shadow=True, startangle=45,radius=1.65, center = (2.5,0))
+    plt.pie(sizes, explode=explode1,  colors=colors,autopct=make_autopct(sizes), shadow=True, startangle=90,radius=1.65, center = (-2.5,0))
+    plt.pie(sizes2, explode=explode2,  colors=colors2,autopct=make_autopct(sizes2), shadow=True, startangle=45,radius=1.65, center = (2.5,0))
 
     # Ploto as legendas forçadas
-        plt.gca().add_artist(plt.legend(handles=[first_legend,second_legend],loc = 2))
-        plt.legend(handles=[third_legend,fourth_legend],loc = 4)
-        plt.axis('equal')
+    plt.gca().add_artist(plt.legend(handles=[first_legend,second_legend],loc = 2))
+    plt.legend(handles=[third_legend,fourth_legend],loc = 4)
+    plt.axis('equal')
     plt.show()
 
 def create_and_plot_bar(log):
@@ -264,12 +262,6 @@ def which_participate(Alunos):
 
     return Epic_Alunos,Poor_Students
 
-class Aluno:
-    def __init__(self,personName,numMessages,numParticipations,firstPost):
-        self.personName = personName
-        self.numMessages = numMessages
-        self.numParticipations = numParticipations
-        self.firstPost =  firstPost
 #--------------------------- CONSISTÊNCIAS ------------------------------------#
 def names_excel(file_):
     # Dado um arquivo excel no formato [w/e][w/e][Nome]....[w/e]
@@ -377,6 +369,12 @@ def is_date(string):
     else:
         False
 
+class Aluno:
+    def __init__(self,personName,numMessages,numParticipations,firstPost):
+        self.personName = personName
+        self.numMessages = numMessages
+        self.numParticipations = numParticipations
+        self.firstPost =  firstPost
 
 #---------------------------------------FUNCTIONS MENU-------------------------#
 def menu_options():
@@ -390,16 +388,14 @@ def menu_options():
     0. Sair
     """)
 #--------------------------MENU do pai vianna----------------------------------#
-"""def menuXuxu():
+def menuXuxu():
     window = Tk()
     window.withdraw()
     print("ESCOLHA O EXCEL COM OS NOMES")
     namesFile_ =  filedialog.askopenfilename(initialdir = "/",title = "Select file",filetypes = (("Excel files","*.xlsx"),("all files","*.*")))
     print("ESCOLHA O EXCEL COM O LOG")
     file_ =  filedialog.askopenfilename(initialdir = "/",title = "Select file",filetypes = (("Excel files","*.xlsx"),("all files","*.*")))
-    first_day = str(input("Primeiro dia dd/mm/aaaa: "))
-    last_day = str(input("Último dia dd/mm/aaaa: "))
-    studentslist,weeklyPostsList = loadErikaLog(file_,namesFile_,first_day,last_day)
+    studentslist,weeklyPostsList = loadErikaLog(file_,namesFile_,"02/08/2016","02/11/2016")
     window.destroy()
     #pie chart
     Yesparticipate,nonParticipate,justReaders,readWriters = amount_interactions_pieChart(studentslist)
@@ -436,161 +432,4 @@ def menu_options():
 
 # Main que chama menu xuxu
 
-menuXuxu()"""
-
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import (QWidget, QToolTip,
-    QPushButton, QApplication)
-from PyQt5.QtGui import QFont
-class Ui_MainWindow(QtWidgets.QMainWindow):
-        def __init__(self,parent=None):
-            QtWidgets.QMainWindow.__init__(self,parent)
-            self.inicio()
-
-        def inicio(self):
-            window=Tk()
-            print("ESCOLHA O EXCEL COM OS NOMES")
-            namesFile_ =  filedialog.askopenfilename(initialdir = "/",title = "Select file",filetypes = (("Excel files","*.xlsx"),("all files","*.*")))
-            first_day = "08/08/2016"
-            last_day = "25/10/2016"
-            file_ = filedialog.askopenfilename(initialdir = "/",title = "Select file",filetypes = (("Excel files","*.xlsx"),("all files","*.*")))
-            self.studentslist,self.weeklyPostsList = loadErikaLog(file_,namesFile_,first_day,last_day)
-            window.destroy()
-            #pie chart
-            self.Yesparticipate,self.nonParticipate,self.justReaders,self.readWriters = amount_interactions_pieChart(self.studentslist)
-            self.listParticipants,self.listAbsents=which_participate(self.studentslist)
-            self.setupUi(self)
-
-        def setupUi(self,MainWindow):
-            MainWindow.setObjectName("MainWindow")
-            MainWindow.resize(501, 428)
-            self.centralWidget = QtWidgets.QWidget(MainWindow)
-            self.centralWidget.setObjectName("centralWidget")
-            self.gridLayout = QtWidgets.QGridLayout(self.centralWidget)
-            self.gridLayout.setContentsMargins(11, 11, 11, 11)
-            self.gridLayout.setSpacing(6)
-            self.gridLayout.setObjectName("gridLayout")
-            self.Data_inicial = QtWidgets.QLabel(self.centralWidget)
-            self.Data_inicial.setObjectName("Data_inicial")
-            self.gridLayout.addWidget(self.Data_inicial, 3, 0, 1, 2)
-            self.Data_final = QtWidgets.QLabel(self.centralWidget)
-            self.Data_final.setObjectName("Data_final")
-            self.gridLayout.addWidget(self.Data_final, 4, 0, 1, 1)
-
-            self.EnviaramNaoEnviaram = QtWidgets.QPushButton(self.centralWidget)
-            self.EnviaramNaoEnviaram.setObjectName("EnviaramNaoEnviaram")
-            self.EnviaramNaoEnviaram.clicked.connect(self.opt1)
-
-            self.gridLayout.addWidget(self.EnviaramNaoEnviaram, 5, 2, 1, 1)
-            self.escInici = QtWidgets.QLineEdit(self.centralWidget)
-            self.escInici.setObjectName("escInici")
-            self.gridLayout.addWidget(self.escInici, 3, 2, 1, 1)
-            self.escFinal = QtWidgets.QLineEdit(self.centralWidget)
-            self.escFinal.setObjectName("escFinal")
-            self.gridLayout.addWidget(self.escFinal, 4, 2, 1, 1)
-
-            self.PerguntaPorSemana = QtWidgets.QPushButton(self.centralWidget)
-            self.PerguntaPorSemana.setObjectName("PerguntaPorSemana")
-            self.PerguntaPorSemana.clicked.connect(self.opt5)
-
-            self.gridLayout.addWidget(self.PerguntaPorSemana, 9, 2, 1, 1)
-
-            self.CadaParticipacao = QtWidgets.QPushButton(self.centralWidget)
-            self.CadaParticipacao.setObjectName("CadaParticipacao")
-            self.CadaParticipacao.clicked.connect(self.opt2)
-
-            self.gridLayout.addWidget(self.CadaParticipacao, 6, 2, 1, 1)
-
-            self.PrimeiraPartici = QtWidgets.QPushButton(self.centralWidget)
-            self.PrimeiraPartici.setObjectName("PrimeiraPartici")
-            self.PrimeiraPartici.clicked.connect(self.opt3)
-
-            self.gridLayout.addWidget(self.PrimeiraPartici, 7, 2, 1, 1)
-
-            self.QuantosParticiparam = QtWidgets.QPushButton(self.centralWidget)
-            self.QuantosParticiparam.setObjectName("QuantosParticiparam")
-            self.QuantosParticiparam.clicked.connect(self.opt4)
-
-            self.gridLayout.addWidget(self.QuantosParticiparam, 8, 2, 1, 1)
-            self.verticalLayout = QtWidgets.QVBoxLayout()
-            self.verticalLayout.setContentsMargins(11, 11, 11, 11)
-            self.verticalLayout.setSpacing(6)
-            self.verticalLayout.setObjectName("verticalLayout")
-            self.textInsira = QtWidgets.QLabel(self.centralWidget)
-            self.textInsira.setObjectName("textInsira")
-            self.verticalLayout.addWidget(self.textInsira)
-            self.gridLayout.addLayout(self.verticalLayout, 0, 2, 1, 1)
-            MainWindow.setCentralWidget(self.centralWidget)
-            self.menuBar = QtWidgets.QMenuBar(MainWindow)
-            self.menuBar.setGeometry(QtCore.QRect(0, 0, 501, 21))
-            self.menuBar.setObjectName("menuBar")
-            self.menuOi = QtWidgets.QMenu(self.menuBar)
-            self.menuOi.setObjectName("menuOi")
-            MainWindow.setMenuBar(self.menuBar)
-            self.mainToolBar = QtWidgets.QToolBar(MainWindow)
-            self.mainToolBar.setObjectName("mainToolBar")
-            MainWindow.addToolBar(QtCore.Qt.TopToolBarArea, self.mainToolBar)
-            self.statusBar = QtWidgets.QStatusBar(MainWindow)
-            self.statusBar.setObjectName("statusBar")
-            MainWindow.setStatusBar(self.statusBar)
-
-            self.actionExit = QtWidgets.QAction(MainWindow)
-            self.actionExit.setObjectName("actionExit")
-            self.actionExit.triggered.connect(self.arqalunos)
-
-            self.actionExit_2 = QtWidgets.QAction(MainWindow)
-            self.actionExit_2.setObjectName("actionExit_2")
-            self.actionExit_2.triggered.connect(self.arqlog)
-
-            self.menuOi.addAction(self.actionExit)
-            self.menuOi.addSeparator()
-            self.menuOi.addAction(self.actionExit_2)
-            self.menuBar.addAction(self.menuOi.menuAction())
-            self.retranslateUi(MainWindow)
-            QtCore.QMetaObject.connectSlotsByName(MainWindow)
-            self.show()
-
-        def opt1(self):
-            pieChart(self.nonParticipate,self.Yesparticipate,self.justReaders,self.readWriters)
-        def opt2(self):
-            for x in self.listParticipants:
-                print (str(x.personName) + ("\nMensagens: ") + str(x.numMessages) + (" Participações: ") + str(x.numParticipations))
-                print('\n\n')
-            plotgraph_bar(self.listParticipants)
-        def opt3(self):
-            for x in self.listParticipants:
-                print (str(x.personName) + ("\nFirst post: ") + str(x.firstPost))
-                print('\n\n')
-        def opt4(self):
-            for x in self.listParticipants:
-                print (("Participou: ") + str(x.personName))
-            print ("\n")
-            for x in self.listAbsents:
-                print (("Não participou: ") + str (x.personName))
-        def opt5(self):
-            create_and_plot_lines(self.weeklyPostsList)
-        def arqalunos(self):
-            self.arquivo_alunos = filedialog.askopenfilename(initialdir = "/",title = "Select file",filetypes = (("Excel files","*.xlsx"),("all files","*.*")))
-        def arqlog(self):
-            self.arquivo_log = filedialog.askopenfilename(initialdir = "/",title = "Select file",filetypes = (("Excel files","*.xlsx"),("all files","*.*")))
-        def retranslateUi(self, MainWindow):
-            _translate = QtCore.QCoreApplication.translate
-            MainWindow.setWindowTitle(_translate("MainWindow", "AppLog"))
-            self.Data_inicial.setText(_translate("MainWindow", "Data Inicial"))
-            self.Data_final.setText(_translate("MainWindow", "Data final"))
-            self.EnviaramNaoEnviaram.setText(_translate("MainWindow", "Quantos enviaram mensagem e não enviaram? Gráfico"))
-            self.PerguntaPorSemana.setText(_translate("MainWindow", "Número de perguntas por semana."))
-            self.CadaParticipacao.setText(_translate("MainWindow", "Para cada aluno que participou, quantas vezes cada alunou participou?"))
-            self.PrimeiraPartici.setText(_translate("MainWindow", "Para cada aluno que participou, qual foi sua primeira participação?"))
-            self.QuantosParticiparam.setText(_translate("MainWindow", "Quais alunos participaram ao longo do semestre?"))
-            self.textInsira.setText(_translate("MainWindow", "                          INSIRA AS DATAS NO FORMATO DD/MM/AAAA"))
-            self.menuOi.setTitle(_translate("MainWindow", "File"))
-            self.actionExit.setText(_translate("MainWindow", "Alunos"))
-            self.actionExit_2.setText(_translate("MainWindow", "Log"))
-
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    ex = Ui_MainWindow()
-    ex.show()
-    sys.exit(app.exec_())
+menuXuxu()
