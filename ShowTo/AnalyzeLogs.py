@@ -22,6 +22,7 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter, inch
 from reportlab.platypus import Image, Paragraph, SimpleDocTemplate, Table
 from reportlab.lib.styles import getSampleStyleSheet
+import argparse as p
 
 def xlread(arq_xls):
     # Abre o arquivo
@@ -467,9 +468,59 @@ def menuXuxu(option,namesFile_,file_,startingDate,finalDate):
 # Main que chama menu xuxu
 
 
-if len(sys.argv)==4:
-    menuXuxu(argv[1],argv[2],argv[3],0,0)
-elif len(sys.argv) == 6:
-    menuXuxu(argv[1],argv[2],argv[3],argv[4],argv[5])
-else :
-    print("Pârametros incorretos, leia o arquivo README.txt")
+p = p.ArgumentParser(description="""Script Moodle :::::: TYPE -h FOR HELP""")
+p.add_argument('-i','--students', help='Input students file name',required=True)
+p.add_argument('-ii','--log',help='Input log file name', required=True)
+p.add_argument('-f','--firstdate',help='First date dd/mm/aaaa',required=False)
+p.add_argument('-l','--lastdate',help='Last date dd/mm/aaaa',required=False)
+p.add_argument('-o','--option',help='''# # 1 -  Quantos alunos enviaram mensagem e não enviaram.
+# # 2 -  Para cada aluno que participou, quantas vezes participou?
+# # 3 -  Estatisticas de cada aluno (saida em pdf).
+# # 4 -  Número de perguntas por semana.
+# # 9 -  Todos as operações acima sendo mostradas uma após a outra sem gerar arquivo de saida.
+# # 10 - Todos as operações acima sendo mostradas uma após a outra gerando arquivo de saida.''',required=True)
+args = p.parse_args()
+def cmd_consistency(args):
+    try:
+        for linha in xlread(args.students):
+            isinstance(linha[2],str)
+            break
+
+    except OSError:
+        print('NAMES File not found, please be sure the file is in the same folder and select the excel NAMES file in -i')
+        sys.exit()
+    except TypeError:
+        print('NAMES Wrong File, please select the excel NAMES file in -i')
+        sys.exit()
+    try:
+        for linha in xlread(args.log):
+            isinstance(linha[1],str)
+            break
+    except OSError:
+        print('LOG File not found, please be sure the file is in the same folder and select the excel LOG file in -ii')
+        sys.exit()
+    except TypeError:
+        print('LOG Wrong File, please select the excel LOG file in -ii')
+        sys.exit()
+    try:
+        if args.option == '1' or args.option == '2' or args.option == '3' or args.option == '4' or args.option == '9' or args.option == '10':
+            x=1
+        else:
+            x=1/0
+    except:
+        print ("Not a valid option, type -h for help")
+        sys.exit()
+    try:
+        first=convert_to_datetime(args.firstdate)
+        last=convert_to_datetime(args.lastdate)
+
+    except TypeError:
+        print("Input date is none. Everything in the log will be processed")
+        first,last=carregaIntervalo(args.log)
+    except ValueError:
+        print("Some date is in wrong format, please format is DD/MM/AAAA")
+        sys.exit()
+    return first,last
+firstday,lastday = cmd_consistency(args)
+
+menuXuxu(args.option,args.students,args.log,firstday,lastday)
