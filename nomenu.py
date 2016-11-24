@@ -18,6 +18,10 @@ import re
 import math
 import pylab as pl
 import matplotlib.patches as mpatches
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter, inch
+from reportlab.platypus import Image, Paragraph, SimpleDocTemplate, Table
+from reportlab.lib.styles import getSampleStyleSheet
 
 def xlread(arq_xls):
     # Abre o arquivo
@@ -263,6 +267,27 @@ def which_participate(Alunos):
 
     return Epic_Alunos,Poor_Students
 
+def make_matriz(Alunos):
+    # Recebe uma lista de Alunos e devolve uma matriz com as infs relevantes desses alunos
+    matriz=[]
+    styleSheet = getSampleStyleSheet()
+    P1 = Paragraph('''
+        <para align=center spaceb=3><b>Nome do aluno</b></para>''',styleSheet["BodyText"])
+    P2 =Paragraph('''
+        <para align=center spaceb=3><b>Quantia de mensagens</b></para>''',styleSheet["BodyText"])
+    P3 = Paragraph('''
+        <para align=center spaceb=3><b>Quantia de participações</b></para>''',styleSheet["BodyText"])
+    P4 = Paragraph('''
+        <para align=center spaceb=3><b>Primeiro post/Participou</b></para>''',styleSheet["BodyText"])
+    matriz.append([P1,P2,P3,P4])
+    for student in Alunos:
+        if (student.firstPost > convert_to_datetime("01/01/9998")):
+            firstdate = "Não participou"
+        else:
+            firstdate = student.firstPost
+        matriz.append([student.personName,student.numMessages,student.numParticipations,firstdate])
+    return matriz
+
 #--------------------------- CONSISTÊNCIAS ------------------------------------#
 def names_excel(file_):
     # Dado um arquivo excel no formato [w/e][w/e][Nome]....[w/e]
@@ -388,6 +413,21 @@ def menu_options():
     5. Quais alunos participaram ao longo do semestre?
     0. Sair
     """)
+def Make_PDF(matriz):
+    doc = SimpleDocTemplate("alunos_moodle.pdf", pagesize=letter)
+    # container for the 'Flowable' objects
+    elements = []
+
+    t=Table(matriz,style= [('INNERGRID', (0, 0), (-1, -1), 1, colors.black),
+     ('BOX', (0, 0), (-1, -1), 0.5, colors.black),
+     ('VALIGN', (0, 0), (-1, 0), 'MIDDLE'),
+     ('BACKGROUND', (0, 0), (-1, 0), colors.gray)])
+    t._argW[3]=1.5*inch
+
+    elements.append(t)
+    # write the document to disk
+    doc.build(elements)
+
 #--------------------------MENU do pai vianna----------------------------------#
 def menuXuxu():
     window = Tk()
@@ -402,6 +442,8 @@ def menuXuxu():
     Yesparticipate,nonParticipate,justReaders,readWriters = amount_interactions_pieChart(studentslist)
     listParticipants,listAbsents=which_participate(studentslist)
     loop = True
+    matriz=make_matriz(studentslist)
+    Make_PDF(matriz)
     while(loop):
         menu_options()
         option = input("Escolha: ")
