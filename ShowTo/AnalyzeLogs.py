@@ -469,16 +469,16 @@ def menuXuxu(option,namesFile_,file_,startingDate,finalDate):
 
 
 p = p.ArgumentParser(description="""Script Moodle :::::: TYPE -h FOR HELP""")
-p.add_argument('-i','--students', help='Input students file name',required=True)
-p.add_argument('-ii','--log',help='Input log file name', required=True)
-p.add_argument('-f','--firstdate',help='First date dd/mm/aaaa',required=False)
-p.add_argument('-l','--lastdate',help='Last date dd/mm/aaaa',required=False)
-p.add_argument('-o','--option',help='''# # 1 -  Quantos alunos enviaram mensagem e não enviaram.
+p.add_argument('students', help = 'File that contains the students names in EXCEL')
+p.add_argument('log',help = 'File that contains the log in EXCEL')
+p.add_argument('option',help ='''# # 1 -  Quantos alunos enviaram mensagem e não enviaram.
 # # 2 -  Para cada aluno que participou, quantas vezes participou?
 # # 3 -  Estatisticas de cada aluno (saida em pdf).
 # # 4 -  Número de perguntas por semana.
 # # 9 -  Todos as operações acima sendo mostradas uma após a outra sem gerar arquivo de saida.
-# # 10 - Todos as operações acima sendo mostradas uma após a outra gerando arquivo de saida.''',required=True)
+# # 10 - Todos as operações acima sendo mostradas uma após a outra gerando arquivo de saida.''')
+p.add_argument('-f','--firstdate',help='First date dd/mm/aaaa',required=False)
+p.add_argument('-l','--lastdate',help='Last date dd/mm/aaaa',required=False)
 args = p.parse_args()
 def cmd_consistency(args):
     try:
