@@ -1,12 +1,10 @@
 # encoding: utf-8
 import xlrd
 from sys import argv
-import os.path
 from tkinter import *
 from datetime import datetime
 from datetime import date
 from operator import itemgetter
-import operator
 import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.ticker as ticker
@@ -14,8 +12,6 @@ import matplotlib.cbook as cbook
 import matplotlib as mpl
 from matplotlib.mlab import csv2rec
 from matplotlib.cbook import get_sample_data
-import re
-import math
 import matplotlib.patches as mpatches
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter, inch
