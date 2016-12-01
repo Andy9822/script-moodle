@@ -513,3 +513,4 @@ def cmd_consistency(args):
 firstday,lastday = cmd_consistency(args)
 
 development(args.option,args.students,args.log,firstday,lastday)
+

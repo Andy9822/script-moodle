@@ -56,6 +56,19 @@
 4. Verifique se salvou como ".xlsx".
 
 
+############################################################
+---------------------- IMPORTANTE --------------------------
+############################################################
+Não separa as pastas e os arquivos:
+	matplotlib
+	reportlab
+	xlrd
+	pylab.py
+	AnalyzeLogs.py
+
+Pois o script "AnalyzeLogs" importa essas pastas/arquivos para o programa.
+
+
 
 
 
