@@ -71,7 +71,7 @@
 ############################################################
 ---------------------- IMPORTANTE --------------------------
 ############################################################
-Caso tenha feito download do import.rar é necessário deixar no mesmo diretório:
+Caso tenha feito download do import.rar é necessário que as seguintes pastas/arquivos se encontrem no mesmo diretório:
 	matplotlib
 	reportlab
 	xlrd
