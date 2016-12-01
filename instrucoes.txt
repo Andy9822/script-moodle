@@ -1,98 +1,80 @@
-# Script para analisar informaÁıes sobre interaÁ„o de alunos das cadeiras de IntroduÁ„o ‡ ProgramaÁ„o 
-# no fÛrum de D˙vidas da respectiva cadeira no Moodle .
+# Script para analisar informa√ß√µes sobre intera√ß√£o de alunos das cadeiras de Introdu√ß√£o √† Programa√ß√£o 
+# no f√≥rum de D√∫vidas da respectiva cadeira no Moodle.
 
-# InstalaÁ„o para a execuÁ„o
-1. Acessar https://www.python.org/ftp/python/3.5.2/python-3.5.2.exe e baixar o python 3.5.2
-2. N„o esquecer de marcar a opÁ„o "ADD PYTHON TO PATH" na primeira janela da instalaÁ„o
-3. ApÛs a instalaÁ„o escrever os seguintes comandos no CMD do WINDOWS: (pip3 porque usamos o python 3)
+#
+# Instala√ß√£o para a execu√ß√£o
+#
+1. Acessar https://www.python.org/downloads/ e baixar a vers√£o python 3.x.x (cuidar para n√£o baixar um Python 2.x.x)
+2. N√£o esquecer de marcar a op√ß√£o "ADD PYTHON TO PATH" na primeira janela da instala√ß√£o
+3. Ap√≥s a instala√ß√£o escrever os seguintes comandos no CMD do WINDOWS: (pip3 porque usamos o python 3)
 		pip3 install xlrd
 		pip3 install matplotlib
 		pip3 install reportlab
-	Obs: caso falte algum module extra, sÛ digitar pip3 install "nome_do_module"
-4. Abrir o CMD e trocar o diretÛrio para a pasta em que se encontra o arquivo "AnalyzeLogs.py" e executar conforme abaixo.
+	Obs: Se faltar algum module extra, s√≥ digitar pip3 install "nome_do_module"
+	
+4 Caso houver algum problema com a instala√ß√£o dos m√≥dulos, pode ser baixado o arquivo "imports.rar" e extrair os arquivos 
+  na mesma pasta em que o script se encontrar. Isto evitar√° qualquer conflito que possa haver por instala√ß√£o 
+  pr√©via de outra vers√£o mais antiga de Python e/ou falta de permiss√µes para instalar no usu√°rio do PC que se estiver utilizando.
+5. Abrir o CMD e trocar o diret√≥rio para a pasta em que se encontra o arquivo "AnalyzeLogs.py" e executar conforme abaixo.
 
-# UtilizaÁ„o
-- O script deve ser chamado desde a linha de comando passando 3 ou 5 p‚rametros adicionais, alÈm do nome do arquivo. 
-- Os 2 p‚rametros adicionais servem para delimitar uma data na an·lise dos logs passados. Caso n„o sejam passados esses
-- 2 p‚rametros, se usar· o log inteiro como referÍncia.
+#
+# Utiliza√ß√£o
+#
+- O script deve ser chamado desde a linha de comando passando 3 ou 5 p√¢rametros , al√©m do nome do arquivo. 
+- Os 2 p√¢rametros adicionais servem para delimitar uma data na an√°lise dos logs passados. Caso n√£o sejam passados esses
+- 2 p√¢rametros, se usar√° o log inteiro como refer√™ncia.
 
-- As datas devem ser passadas como um argumento sÛ e na forma dd/mm/ano.
-- As operaÁ„o deve ser passadas como um n˙mero e pode ser escolhida dentre as seguintes:
-- Os gr·ficos podem ser salvos na prÛpria janela gerada, no menu a esquerda inferior tem uma opÁ„o a extrema direita "Save the figure"
+- As datas devem ser passadas como um argumento s√≥ e na forma dd/mm/ano.
+- Deve ser passado o nome do arquivo contendo o nome dos alunos e o nome do arquivo contendo os logs nesta mesma ordem e como p√¢rametros separados.
+- A opera√ß√£o deve ser passadas como um n√∫mero e pode ser escolhida dentre as seguintes:
 
--  1 -  Quantos alunos enviaram mensagem e n„o enviaram .
+-  1 -  Quantos alunos enviaram mensagem e n√£o enviaram .
 -  2 -  Para cada aluno que participou, quantas vezes participou?
 -  3 -  Estatisticas de cada aluno (saida em pdf).
--  4 -  N˙mero de perguntas por semana.
--  9 -  Todos as operaÁıes acima sendo mostradas uma apÛs a outra sem gerar arquivo de saida.
--  10 - Todos as operaÁıes acima sendo mostradas uma apÛs a outra gerando arquivo de saida.
+-  4 -  N√∫mero de perguntas por semana.
+-  9 -  Todos as opera√ß√µes acima sendo mostradas uma ap√≥s a outra sem gerar arquivo de saida.
+-  10 - Todos as opera√ß√µes acima sendo mostradas uma ap√≥s a outra gerando arquivo de saida.
 
-- O protÛtipo da chamada do script È:
--  <Nome_Do_Programa> <Nome_Arquivo_Alunos> <Nome_Contendo_Logs> <Num_OperaÁ„o> 
+
+- O prot√≥tipo da chamada do script √©:
+-  <Nome_Do_Programa> <Nome_Arquivo_Alunos> <Nome_Contendo_Logs> <Num_Opera√ß√£o> 
 -  ou no caso de querer delimitar data:
--  <Nome_Do_Programa> <Nome_Arquivo_Alunos> <Nome_Contendo_Logs> <Num_OperaÁ„o> -f <data_inicial> -l <data_final>
+-  <Nome_Do_Programa> <Nome_Arquivo_Alunos> <Nome_Contendo_Logs> <Num_Opera√ß√£o> -f <data_inicial> -l <data_final>
 
 - Ex: analyzelogs.py alunos.xlsx log.xlsx 10
 - Ex: analyzelogs.py alunos.xlsx log.xlsx 10 -f 10/08/2016 -l 10/12/2016
 
-- Em caso de problemas, ou d˙vidas chamar o script apenas com o par‚metro "-h" que ser„o mostradas algumas indicaÁıes.
+- Em caso de problemas, ou d√∫vidas chamar o script apenas com o par√¢metro "-h" que ser√£o mostradas algumas indica√ß√µes.
 - Ex: "AnalyzeLogs.py -h"
+
+
+- Os gr√°ficos podem ser salvos na pr√≥pria janela gerada, no men√∫ inferior tem a op√ß√£o √† extrema direita "Save the figure".
 
 
 # ENTRADAS
 - Para obter o arquivo de entrada "alunos.xlsx" basta seguir os seguintes passos:
 
 1. Acessar o curso desejado via moodle e ir na aba "Participantes".
-2. Selecionar Alunos no filtro e clicar na ˙ltima opÁ„o abaixo "Mostrar todos os ##".
-3. Selecionar todos os alunos com o mouse, copiar e colar em uma planilha excel (ela se organizar· sozinha).
-4. Verificar se todos os nomes est„o na coluna "C" ou "3".
+2. Selecionar Alunos no filtro e clicar na √∫ltima op√ß√£o abaixo "Mostrar todos os ##".
+3. Selecionar todos os alunos com o mouse, copiar e colar em uma planilha excel (ela se organizar√° sozinha).
+4. Verificar se todos os nomes est√£o na coluna "C" ou "3".
 5. Salve como .xlsx.
 
 # Para obter o arquivo de entrada "log.xlsx" basta seguir os seguintes passos:
 
-1. Acessar o curso e o fÛrum desejado.
-2. Acessar os "logs" a partir da administraÁ„o do fÛrum.
-3. Selecionar na parte inferior dos logs a opÁ„o "Baixar dados da tabela como: Planilha do Microsoft Excel" DOWNLOAD.
+1. Acessar o curso e o f√≥rum desejado.
+2. Acessar os "logs" a partir da administra√ß√£o do f√≥rum.
+3. Selecionar na parte inferior dos logs a op√ß√£o "Baixar dados da tabela como: Planilha do Microsoft Excel" DOWNLOAD.
 4. Verifique se salvou como ".xlsx".
 
 
 ############################################################
 ---------------------- IMPORTANTE --------------------------
 ############################################################
-N„o separa as pastas e os arquivos:
+Deixar no mesmo diret√≥rio:
 	matplotlib
 	reportlab
 	xlrd
-	pylab.py
 	AnalyzeLogs.py
 
-Pois o script "AnalyzeLogs" importa essas pastas/arquivos para o programa.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Pois o script "AnalyzeLogs" importa essas pastas para o programa.
