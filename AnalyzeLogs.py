@@ -26,7 +26,7 @@ def xlread(arq_xls):
     plan = xls.sheets()[0]
     # Para i de zero ao numero de linhas da planilha
     for i in range(plan.nrows):
-        # Le os valores nas linhas da planilha
+        # Le os valores nas linhas da planilha 
         yield plan.row_values(i)
 
 def how_visua_day(log,day):
