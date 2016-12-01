@@ -16,7 +16,6 @@ from matplotlib.mlab import csv2rec
 from matplotlib.cbook import get_sample_data
 import re
 import math
-import pylab as pl
 import matplotlib.patches as mpatches
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter, inch
@@ -513,4 +512,3 @@ def cmd_consistency(args):
 firstday,lastday = cmd_consistency(args)
 
 development(args.option,args.students,args.log,firstday,lastday)
-
