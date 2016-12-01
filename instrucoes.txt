@@ -2,37 +2,58 @@
 # no fórum de Dúvidas da respectiva cadeira no Moodle .
 
 # Instalação para a execução
-
 1. Acessar https://www.python.org/ftp/python/3.5.2/python-3.5.2.exe e baixar o python 3.5.2
 2. Não esquecer de marcar a opção "ADD PYTHON TO PATH" na primeira janela da instalação
-3. Após a instalação escrever os seguintes comandos no CMD do WINDOWS:
-		pip install xlrd
-		pip install matplotlib
-		pip install reportlab
-	Obs: caso falte algum module extra, só digitar pip install "nome_do_module"
+3. Após a instalação escrever os seguintes comandos no CMD do WINDOWS: (pip3 porque usamos o python 3)
+		pip3 install xlrd
+		pip3 install matplotlib
+		pip3 install reportlab
+	Obs: caso falte algum module extra, só digitar pip3 install "nome_do_module"
 4. Abrir o CMD e trocar o diretório para a pasta em que se encontra o arquivo "AnalyzeLogs.py" e executar conforme abaixo.
 
-# O script deve ser chamado desde a linha de comando passando 3 ou 5 pârametros adicionais, além do nome do arquivo. 
-# Os 2 pârametros adicionais servem para delimitar uma data na análise dos logs passados. Caso não sejam passados esses
-# 2 pârametros, se usará o log inteiro como referência.
+# Utilização
+- O script deve ser chamado desde a linha de comando passando 3 ou 5 pârametros adicionais, além do nome do arquivo. 
+- Os 2 pârametros adicionais servem para delimitar uma data na análise dos logs passados. Caso não sejam passados esses
+- 2 pârametros, se usará o log inteiro como referência.
 
-# O protótipo da chamada do script é:
-#  <Nome_Do_Arquivo> <Num_Operação> <Nome_Arquivo_Alunos> <Nome_Contendo_Logs>
-#  ou no caso de querer delimitar data:
-#  <Nome_Do_Arquivo> <Num_Operação> <Nome_Arquivo_Alunos> <Nome_Contendo_Logs> -f <data_inicial> -l <data_final>
+- As datas devem ser passadas como um argumento só e na forma dd/mm/ano.
+- As operação deve ser passadas como um número e pode ser escolhida dentre as seguintes:
+- Os gráficos podem ser salvos na própria janela gerada, no menu a esquerda inferior tem uma opção a extrema direita "Save the figure"
 
-# As datas devem ser passadas como um argumento só e na forma dd/mm/ano.
-# As operação deve ser passadas como um número e pode ser escolhida dentre as seguintes:
+-  1 -  Quantos alunos enviaram mensagem e não enviaram .
+-  2 -  Para cada aluno que participou, quantas vezes participou?
+-  3 -  Estatisticas de cada aluno (saida em pdf).
+-  4 -  Número de perguntas por semana.
+-  9 -  Todos as operações acima sendo mostradas uma após a outra sem gerar arquivo de saida.
+-  10 - Todos as operações acima sendo mostradas uma após a outra gerando arquivo de saida.
 
-#  1 -  Quantos alunos enviaram mensagem e não enviaram .
-#  2 -  Para cada aluno que participou, quantas vezes participou?
-#  3 -  Estatisticas de cada aluno (saida em pdf).
-#  4 -  Número de perguntas por semana.
-#  9 -  Todos as operações acima sendo mostradas uma após a outra sem gerar arquivo de saida.
-#  10 - Todos as operações acima sendo mostradas uma após a outra gerando arquivo de saida.
+- O protótipo da chamada do script é:
+-  <Nome_Do_Programa> <Nome_Arquivo_Alunos> <Nome_Contendo_Logs> <Num_Operação> 
+-  ou no caso de querer delimitar data:
+-  <Nome_Do_Programa> <Nome_Arquivo_Alunos> <Nome_Contendo_Logs> <Num_Operação> -f <data_inicial> -l <data_final>
 
-# Em caso de problemas, ou dúvidas chamar o script apenas com o parâmetro "-h" que serão mostradas algumas indicações.
-# Ex: "AnalyzeLogs.py -h"
+- Ex: analyzelogs.py alunos.xlsx log.xlsx 10
+- Ex: analyzelogs.py alunos.xlsx log.xlsx 10 -f 10/08/2016 -l 10/12/2016
+
+- Em caso de problemas, ou dúvidas chamar o script apenas com o parâmetro "-h" que serão mostradas algumas indicações.
+- Ex: "AnalyzeLogs.py -h"
+
+
+# ENTRADAS
+- Para obter o arquivo de entrada "alunos.xlsx" basta seguir os seguintes passos:
+
+1. Acessar o curso desejado via moodle e ir na aba "Participantes".
+2. Selecionar Alunos no filtro e clicar na última opção abaixo "Mostrar todos os ##".
+3. Selecionar todos os alunos com o mouse, copiar e colar em uma planilha excel (ela se organizará sozinha).
+4. Verificar se todos os nomes estão na coluna "C" ou "3".
+5. Salve como .xlsx.
+
+# Para obter o arquivo de entrada "log.xlsx" basta seguir os seguintes passos:
+
+1. Acessar o curso e o fórum desejado.
+2. Acessar os "logs" a partir da administração do fórum.
+3. Selecionar na parte inferior dos logs a opção "Baixar dados da tabela como: Planilha do Microsoft Excel" DOWNLOAD.
+4. Verifique se salvou como ".xlsx".
 
 
 

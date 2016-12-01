@@ -1,7 +1,7 @@
 # encoding: utf-8
 import xlrd
+from sys import argv
 import os.path
-import tkinter.filedialog as filedialog
 from tkinter import *
 from datetime import datetime
 from datetime import date
@@ -18,6 +18,11 @@ import re
 import math
 import pylab as pl
 import matplotlib.patches as mpatches
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter, inch
+from reportlab.platypus import Image, Paragraph, SimpleDocTemplate, Table
+from reportlab.lib.styles import getSampleStyleSheet
+import argparse as p
 
 def xlread(arq_xls):
     # Abre o arquivo
@@ -81,13 +86,14 @@ def pieChart(notSent,sent,see,write_see):
     third_legend = mpatches.Patch(color='gold', label ='Só visualizam dúvidas alheias')
     fourth_legend = mpatches.Patch(color='yellowgreen', label ='Mandaram e visualizam')
     # Plot
-    plt.pie(sizes, explode=explode1,  colors=colors,autopct=make_autopct(sizes), shadow=True, startangle=90,radius=1.65, center = (-2.5,0))
-    plt.pie(sizes2, explode=explode2,  colors=colors2,autopct=make_autopct(sizes2), shadow=True, startangle=45,radius=1.65, center = (2.5,0))
+    with plt.style.context('fivethirtyeight'):
+        plt.pie(sizes, explode=explode1,  colors=colors,autopct=make_autopct(sizes), shadow=True, startangle=90,radius=1.65, center = (-2.5,0))
+        plt.pie(sizes2, explode=explode2,  colors=colors2,autopct=make_autopct(sizes2), shadow=True, startangle=45,radius=1.65, center = (2.5,0))
 
     # Ploto as legendas forçadas
-    plt.gca().add_artist(plt.legend(handles=[first_legend,second_legend],loc = 2))
-    plt.legend(handles=[third_legend,fourth_legend],loc = 4)
-    plt.axis('equal')
+        plt.gca().add_artist(plt.legend(handles=[first_legend,second_legend],loc = 2))
+        plt.legend(handles=[third_legend,fourth_legend],loc = 4)
+        plt.axis('equal')
     plt.show()
 
 def create_and_plot_bar(log):
@@ -168,6 +174,7 @@ def create_and_plot_lines(weeklyPostsList):
         # Vai mostrar o que foi plotado
         plt.legend()
         plt.show()"""
+
 def plotgraph_bar(Alunos):
     number = []
     people = []
@@ -204,7 +211,6 @@ def analyze_interaction(phrase,date):
         mensagem = 1
     if participa == 0 and mensagem == 0:
         date = ["01/01/9999"]
-
     return mensagem,participa,date
 
 def update_interaction(phrase):
@@ -217,7 +223,6 @@ def update_interaction(phrase):
         participa = 1
         mensagem = 1
     return mensagem,participa
-
 
 def amount_interactions_pieChart(Alunos):
     # Dado uma lista de Alunos retorna quantos participaram e quantos nã
@@ -251,31 +256,48 @@ def amount_messages(Alunos):
 
 def which_participate(Alunos):
     # Devolve uma lista de Alunos que tiveram pelo menos UMA participação
-    Epic_Alunos = []
-    Poor_Students = []
-
+    participate = []
+    not_participate = []
     for x in Alunos:
         if x.numParticipations > 0:
-            Epic_Alunos.append(x)
+            participate.append(x)
         else:
-            Poor_Students.append(x)
+            not_participate.append(x)
+    participate.sort(key=lambda x: x.numParticipations, reverse=False)
+    return participate,not_participate
 
-    return Epic_Alunos,Poor_Students
+def make_matriz(Alunos):
+    # Recebe uma lista de Alunos e devolve uma matriz com as infs relevantes desses alunos
+    matriz=[]
+    styleSheet = getSampleStyleSheet()
+    P1 = Paragraph('''
+        <para align=center spaceb=3><b>Nome do aluno</b></para>''',styleSheet["BodyText"])
+    P2 =Paragraph('''
+        <para align=center spaceb=3><b>Quantia de mensagens</b></para>''',styleSheet["BodyText"])
+    P3 = Paragraph('''
+        <para align=center spaceb=3><b>Quantia de participações</b></para>''',styleSheet["BodyText"])
+    P4 = Paragraph('''
+        <para align=center spaceb=3><b>Primeiro post/Participou</b></para>''',styleSheet["BodyText"])
+    matriz.append([P1,P2,P3,P4])
+    Alunos.sort(key=lambda x: x.numParticipations, reverse=True)
+    Alunos.sort(key=lambda x: x.numMessages, reverse=True)
+    for student in Alunos:
+        if (student.firstPost > convert_to_datetime("01/01/9998")):
+            firstdate = "Não participou"
+        else:
+            firstdate = student.firstPost
+        matriz.append([student.personName,student.numMessages,student.numParticipations,firstdate])
+    return matriz
 
-#--------------------------- CONSISTÊNCIAS ------------------------------------#
 def names_excel(file_):
     # Dado um arquivo excel no formato [w/e][w/e][Nome]....[w/e]
     # Retorna uma lista desses nomes
-    if not file_:
-        return False
-    else:
-        print("Carregando nomes...")
-        # Inicia a lista
-        names = []
-        for linha in xlread(file_):
-            if not linha[2] in names:
-                names.append(linha[2])
-        return names
+    # Inicia a lista
+    names = []
+    for linha in xlread(file_):
+        if not linha[2] in names:
+            names.append(linha[2])
+    return names
 
 def name_in_Aluno(Alunos,name):
     # Recebe uma lista de hero e um nome, retorna se essa nome esta na lista
@@ -289,7 +311,6 @@ def appendGhostStudents(studentsNameList,studentsList):
         if not name_in_Aluno(studentsList,name):
             studentsList.append(Aluno(name,0,0,convert_to_datetime("01/01/9999")))
 
-
 def manageExistantStudent(studentsList,excelName,excelPhrase,inicial,final,data_splited,weeklyPostsList):
     for x in studentsList:
         if x.personName == excelName:
@@ -297,7 +318,7 @@ def manageExistantStudent(studentsList,excelName,excelPhrase,inicial,final,data_
             x.numMessages += newMessage
             x.numParticipations += newParticipations
             #Se foi passado um intervalo de tempo e aluno criou um post, precisa ser atualizada lista de posts por semana
-            if inicial and newMessage:
+            if  newMessage:
                 weeklyPostsList = updateWeeklyPosts(weeklyPostsList,data_splited[0],inicial,final)
             #Se data eh menor que a de antes, pega essa nova
             if convert_to_datetime(data_splited[0]) < x.firstPost:
@@ -314,6 +335,17 @@ def updateWeeklyPosts(weeklyPostsList,date_str,inicial,final):
         weeklyPostsList[date] += 1
     return weeklyPostsList
 
+def carregaIntervalo(file_):
+    final = '01/01/0001'
+    inicial = '01/01/9999'
+    for linha in xlread(file_):
+        if linha[1] != "Nome completo":
+            data_splited=(linha[0].split(' '))
+            if convert_to_datetime(final) < convert_to_datetime(data_splited[0]):
+                final = data_splited[0]
+            if convert_to_datetime(inicial) > convert_to_datetime(data_splited[0]):
+                inicial = data_splited[0]
+    return inicial,final
 
 def create_weeklyPostsList(inicial, final):
     # Calcula intervalo de semanas e cria
@@ -327,35 +359,38 @@ def create_weeklyPostsList(inicial, final):
         weeklyPostsList.append(0)
     return weeklyPostsList,inicial,final
 
-    # Recebe uma lista com nomes dos alunos para filtrar o log gerado pelo Moodle e pode receber um intervalo definido de datas para a consulta das infos
 def loadErikaLog(file_,studentsNamesFile,inicial_str,final_str):
+    # Recebe uma lista com nomes dos alunos para filtrar o log gerado pelo Moodle e pode receber um intervalo definido de datas para a consulta das infos
     # Devolve uma lista com os estudantes e suas infos das participações no forum de duvidas e uma lista com o numero de postagens por semana
     studentsList = []
     weeklyPostsList = []
     studentsNameList = names_excel(studentsNamesFile)
     # Converte as datas para DateTime
-    inicial = convert_to_datetime(inicial_str)
-    final = convert_to_datetime(final_str)
+    if not inicial_str:
+        inicial_str,final_str = carregaIntervalo(file_)
+    inicial_str = convert_to_datetime(inicial_str)
+    final_str = convert_to_datetime(final_str)
     if not file_:
         return studentsList,weeklyPostsList
     else:
         #Se foi passado um intervalo de tempo, precisa ser criada lista de posts por semana
-        if inicial:
-            weeklyPostsList, inicial,final =  create_weeklyPostsList(inicial,final)
+        if inicial_str:
+            weeklyPostsList, inicial_week,final_week =  create_weeklyPostsList(inicial_str,final_str)
         for linha in xlread(file_):
             if linha[1] != "Nome completo":
                 data_splited=(linha[0].split(' '))
-                if linha[1] in studentsNameList:
+                if linha[1] in studentsNameList and final_str >= (convert_to_datetime(data_splited[0])) and inicial_str <= (convert_to_datetime(data_splited[0])):
                 #Testa se pessoa da vez eh um estudante. Se for, analiza se ja foi visto antes ou primeira aparição e se precisa ser tratado
                     if not name_in_Aluno(studentsList,linha[1]):
                         newMessages,newParticipations,data_splited = analyze_interaction(linha[5],data_splited)
-                        if inicial and newMessages:
-                            weeklyPostsList = updateWeeklyPosts(weeklyPostsList,data_splited[0],inicial,final)
+                        if  newMessages:
+                            weeklyPostsList = updateWeeklyPosts(weeklyPostsList,data_splited[0],inicial_week,final_week)
                         studentsList.append(Aluno(linha[1],newMessages,newParticipations,convert_to_datetime(data_splited[0])))
                     else:
-                        studentsList,weeklyPostsList = manageExistantStudent(studentsList,linha[1],linha[5],inicial,final,data_splited,weeklyPostsList)
+                        studentsList,weeklyPostsList = manageExistantStudent(studentsList,linha[1],linha[5],inicial_week,final_week,data_splited,weeklyPostsList)
 
         appendGhostStudents(studentsNameList,studentsList)
+        print("Done")
         return studentsList,weeklyPostsList
 
 def is_date(string):
@@ -369,67 +404,112 @@ def is_date(string):
     else:
         False
 
+def Make_PDF(matriz):
+    doc = SimpleDocTemplate("alunos_moodle.pdf", pagesize=letter)
+    # container for the 'Flowable' objects
+    elements = []
+
+    t=Table(matriz,style= [('INNERGRID', (0, 0), (-1, -1), 1, colors.black),
+     ('BOX', (0, 0), (-1, -1), 0.5, colors.black),
+     ('VALIGN', (0, 0), (-1, 0), 'MIDDLE'),
+     ('BACKGROUND', (0, 0), (-1, 0), colors.gray)])
+    t._argW[3]=1.5*inch
+
+    elements.append(t)
+    # write the document to disk
+    doc.build(elements)
+    print("Foi gerado alunos_moodle.pdf")
+
 class Aluno:
     def __init__(self,personName,numMessages,numParticipations,firstPost):
         self.personName = personName
         self.numMessages = numMessages
         self.numParticipations = numParticipations
         self.firstPost =  firstPost
+#--------------------------DEVELOPMENT----------------------------------#
+def development(option,namesFile_,file_,startingDate,finalDate):
 
-#---------------------------------------FUNCTIONS MENU-------------------------#
-def menu_options():
-    print("""
-    Choose the GRAPH
-    1. Quantos enviaram mensagem e não enviaram? Gráfico
-    2. Para cada aluno que participou, quantas vezes cada alunou participou?
-    3. Para cada aluno que participou, qual foi sua primeira participação?
-    4. Número de perguntas por semana.
-    5. Quais alunos participaram ao longo do semestre?
-    0. Sair
-    """)
-#--------------------------MENU do pai vianna----------------------------------#
-def menuXuxu():
-    window = Tk()
-    window.withdraw()
-    print("ESCOLHA O EXCEL COM OS NOMES")
-    namesFile_ =  filedialog.askopenfilename(initialdir = "/",title = "Select file",filetypes = (("Excel files","*.xlsx"),("all files","*.*")))
-    print("ESCOLHA O EXCEL COM O LOG")
-    file_ =  filedialog.askopenfilename(initialdir = "/",title = "Select file",filetypes = (("Excel files","*.xlsx"),("all files","*.*")))
-    studentslist,weeklyPostsList = loadErikaLog(file_,namesFile_,"02/08/2016","02/11/2016")
-    window.destroy()
-    #pie chart
+    # Coloca a lista de estudantes e as semanas/post nessas variaveis
+    studentslist,weeklyPostsList = loadErikaLog(file_,namesFile_,startingDate,finalDate)
+    # Seleciona quem participa, não participa, só le e quem le e escreve (com números/genérico)
     Yesparticipate,nonParticipate,justReaders,readWriters = amount_interactions_pieChart(studentslist)
+    # Novamente coloca quem participa e quem não participa (exato, quem fez cada)
     listParticipants,listAbsents=which_participate(studentslist)
-    loop = True
-    while(loop):
-        menu_options()
-        option = input("Escolha: ")
-        if option == '1':
-            pieChart(nonParticipate,Yesparticipate,justReaders,readWriters)
-        elif option == '2':
-            for x in listParticipants:
-                print (str(x.personName) + ("\nMensagens: ") + str(x.numMessages) + (" Participações: ") + str(x.numParticipations))
-                print('\n\n')
-            plotgraph_bar(listParticipants)
-        elif option == '3':
-            for x in listParticipants:
-                print (str(x.personName) + ("\nFirst post: ") + str(x.firstPost))
-                print('\n\n')
-        elif option == '4':
-            create_and_plot_lines(weeklyPostsList)
-        elif option == '5':
-            for x in listParticipants:
-                print (("Participou: ") + str(x.personName))
-            print ("\n")
-            for x in listAbsents:
-                print (("Não participou: ") + str (x.personName))
-        elif option == '0':
-            loop = False
+    if option == '1': # Se for 1 a opção, plota o gráfico de pizza
+        pieChart(nonParticipate,Yesparticipate,justReaders,readWriters)
+    elif option == '2': # Se for 2 plota o gráfico de barras
+        plotgraph_bar(listParticipants)
+    elif option == '3': # Se for 3 gera o pdf
+        matriz=make_matriz(studentslist)
+        Make_PDF(matriz)
+    elif option == '4': # Se for 4 faz o gráfico de linhas
+        create_and_plot_lines(weeklyPostsList)
+    elif option == '10' or option == '9': # Se for 9 só vai fazer a pizza e as barras
+        pieChart(nonParticipate,Yesparticipate,justReaders,readWriters)
+        plotgraph_bar(listParticipants)
+        if option == '10':  # Se for 10 vai fazer tudo
+            matriz=make_matriz(studentslist)
+            Make_PDF(matriz)
+        create_and_plot_lines(weeklyPostsList)
+
+# Cria os argumentos que o programa vai receber, e faz as flags, requires e os helps
+p = p.ArgumentParser(description="""Script Analyze Logs Moodle INF UFRGS""")
+p.add_argument('students', help = 'File that contains the students names in EXCEL')
+p.add_argument('log',help = 'File that contains the log in EXCEL')
+p.add_argument('option',help ='''# # 1 -  Quantos alunos enviaram mensagem e não enviaram.
+# # 2 -  Para cada aluno que participou, quantas vezes participou?
+# # 3 -  Estatisticas de cada aluno (saida em pdf).
+# # 4 -  Número de perguntas por semana.
+# # 9 -  Todos as operações acima sendo mostradas uma após a outra sem gerar arquivo de saida.
+# # 10 - Todos as operações acima sendo mostradas uma após a outra gerando arquivo de saida.''')
+p.add_argument('-f','--firstdate',help='First date dd/mm/aaaa',required=False)
+p.add_argument('-l','--lastdate',help='Last date dd/mm/aaaa',required=False)
+args = p.parse_args()
+
+# Consistência na hora de receber os parâmetros
+def cmd_consistency(args):
+    try:
+        for linha in xlread(args.students):
+            isinstance(linha[2],str)
+            break # Sim esse break é feio, mas é só para não perder tempo rodando todo esse for
+    except OSError:
+        print('NAMES File not found, please be sure the file is in the same folder and select the excel NAMES file')
+        sys.exit()
+    except TypeError:
+        print('NAMES Wrong File, please select the excel NAMES file')
+        sys.exit()
+    try:
+        for linha in xlread(args.log):
+            isinstance(linha[1],str)
+            break
+    except OSError:
+        print('LOG File not found, please be sure the file is in the same folder and select the excel LOG file')
+        sys.exit()
+    except TypeError:
+        print('LOG Wrong File, please select the excel LOG file')
+        sys.exit()
+    try:
+        if args.option == '1' or args.option == '2' or args.option == '3' or args.option == '4' or args.option == '9' or args.option == '10':
+            x=1
         else:
-            print ("Opção não encontrada")
+            x=1/0
+    except:
+        print ("Not a valid option, type -h for help")
+        sys.exit()
+    try:
+        first=convert_to_datetime(args.firstdate)
+        last=convert_to_datetime(args.lastdate)
+    except TypeError:
+        print("Input date is none. Everything in the log will be processed")
+        print("Loading...")
+        # Caso ele não tenha colocado data, pega a data mais recente do log e a mais distante
+        # e retorna
+        first,last=carregaIntervalo(args.log)
+    except ValueError:
+        print("Some date is in wrong format, please format is DD/MM/AAAA")
+        sys.exit()
+    return first,last
 
+firstday,lastday = cmd_consistency(args)
 
-
-# Main que chama menu xuxu
-
-menuXuxu()
+development(args.option,args.students,args.log,firstday,lastday)
