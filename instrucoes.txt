@@ -55,7 +55,7 @@
 - Para obter o arquivo de entrada "alunos.xlsx" basta seguir os seguintes passos:
 
 1. Acessar o curso desejado via moodle e ir na aba "Participantes".
-2. Selecionar Alunos no filtro e clicar na última opção abaixo "Mostrar todos os ##".
+2. Selecionar Alunos no filtro e clicar na última opção abaixo "Mostrar todos os ##"
 3. Selecionar todos os alunos com o mouse, copiar e colar em uma planilha excel (ela se organizará sozinha).
 4. Verificar se todos os nomes estão na coluna "C" ou "3".
 5. Salve como .xlsx.
@@ -71,7 +71,7 @@
 ############################################################
 ---------------------- IMPORTANTE --------------------------
 ############################################################
-Deixar no mesmo diretório:
+Caso tenha feito download do import.rar é necessário deixar no mesmo diretório:
 	matplotlib
 	reportlab
 	xlrd
