@@ -1,12 +1,10 @@
 # encoding: utf-8
 import xlrd
 from sys import argv
-import os.path
 from tkinter import *
 from datetime import datetime
 from datetime import date
 from operator import itemgetter
-import operator
 import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.ticker as ticker
@@ -14,9 +12,6 @@ import matplotlib.cbook as cbook
 import matplotlib as mpl
 from matplotlib.mlab import csv2rec
 from matplotlib.cbook import get_sample_data
-import re
-import math
-import pylab as pl
 import matplotlib.patches as mpatches
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter, inch
@@ -31,7 +26,7 @@ def xlread(arq_xls):
     plan = xls.sheets()[0]
     # Para i de zero ao numero de linhas da planilha
     for i in range(plan.nrows):
-        # Le os valores nas linhas da planilha
+        # Le os valores nas linhas da planilha 
         yield plan.row_values(i)
 
 def how_visua_day(log,day):
@@ -513,4 +508,3 @@ def cmd_consistency(args):
 firstday,lastday = cmd_consistency(args)
 
 development(args.option,args.students,args.log,firstday,lastday)
-
