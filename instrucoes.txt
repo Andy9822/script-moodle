@@ -4,7 +4,8 @@
 # Instalação para a execução
 1. Acessar https://www.python.org/ftp/python/3.5.2/python-3.5.2.exe e baixar o python 3.5.2
 2. Não esquecer de marcar a opção "ADD PYTHON TO PATH" na primeira janela da instalação
-3. Após a instalação escrever os seguintes comandos no CMD do WINDOWS: (pip3 porque usamos o python 3)
+3.1 Caso não queira usar "pip install" extrai a pasta "imports" para o diretório do "Analyzelogs.py".
+3.2 Caso queira utilizar "pip install". Após a instalação escrever os seguintes comandos no CMD do WINDOWS: (pip3 porque usamos o python 3)
 		pip3 install xlrd
 		pip3 install matplotlib
 		pip3 install reportlab
@@ -63,6 +64,13 @@ Não separa as pastas e os arquivos:
 	matplotlib
 	reportlab
 	xlrd
+	numpy
+	dateutil
+	__pycache__
+	six.py
+	pyparsing.py
+	pylab.py
+	cycler.py
 	pylab.py
 	AnalyzeLogs.py
 
