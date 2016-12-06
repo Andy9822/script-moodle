@@ -1,24 +1,31 @@
 # encoding: utf-8
-import xlrd
-from sys import argv
-from tkinter import *
-from datetime import datetime
-from datetime import date
-from operator import itemgetter
-import matplotlib.pyplot as plt
-import numpy as np
-import matplotlib.ticker as ticker
-import matplotlib.cbook as cbook
-import matplotlib as mpl
-from matplotlib.mlab import csv2rec
-from matplotlib.cbook import get_sample_data
-import matplotlib.patches as mpatches
-from reportlab.lib import colors
-from reportlab.lib.pagesizes import letter, inch
-from reportlab.platypus import Image, Paragraph, SimpleDocTemplate, Table
-from reportlab.lib.styles import getSampleStyleSheet
-import argparse as p
-
+try:
+    from tkinter import *
+except:
+    print ("Module 'tkinter' not found, you may have python 2.7 AND 3.5, please read the instructions")
+    sys.exit()
+try:
+    import xlrd
+    from sys import argv
+    from datetime import datetime
+    from datetime import date
+    from operator import itemgetter
+    import matplotlib.pyplot as plt
+    import numpy as np
+    import matplotlib.ticker as ticker
+    import matplotlib.cbook as cbook
+    import matplotlib as mpl
+    from matplotlib.mlab import csv2rec
+    from matplotlib.cbook import get_sample_data
+    import matplotlib.patches as mpatches
+    from reportlab.lib import colors
+    from reportlab.lib.pagesizes import letter, inch
+    from reportlab.platypus import Image, Paragraph, SimpleDocTemplate, Table
+    from reportlab.lib.styles import getSampleStyleSheet
+    import argparse as p
+except:
+    print ("Some module can't be found, extract the 'imports.rar' in the same folder")
+    sys.exit()
 def xlread(arq_xls):
     # Abre o arquivo
     xls = xlrd.open_workbook(arq_xls)
@@ -26,7 +33,7 @@ def xlread(arq_xls):
     plan = xls.sheets()[0]
     # Para i de zero ao numero de linhas da planilha
     for i in range(plan.nrows):
-        # Le os valores nas linhas da planilha 
+        # Le os valores nas linhas da planilha
         yield plan.row_values(i)
 
 def how_visua_day(log,day):

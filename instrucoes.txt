@@ -72,6 +72,7 @@
 ############################################################
 ---------------------- IMPORTANTE --------------------------
 ############################################################
+
 Caso tenha feito download do import.rar é necessário que as seguintes pastas/arquivos se encontrem no mesmo diretório:
 
 	matplotlib
@@ -88,3 +89,13 @@ Caso tenha feito download do import.rar é necessário que as seguintes pastas/arq
 	AnalyzeLogs.py
 
 Pois o script "AnalyzeLogs" importa essas pastas para o programa.
+
+# Erros
+
+- "tkinter cant be found"
+	1. Este erro ocorre porque o scrip não consegue diferenciar qual python usar (2.7, ou 3.5) caso você tenha instalados esses dois,
+para resolver há 2 opções:
+		1.1. Desinstalar ambos pythons e instalar somente o python 3.5.2
+		1.2. Ir para a pasta do python 3.5.2 (geralmente é: C:\Users\User\AppData\Local\Programs\Python\Python35-32, lembre de trocar User pelo o seu usuario).
+renomear o aplicativo 'python' para 'python3'. Pronto, mas quando for chamar o script terá que utilizar com 'python3' na frente. Ex: 'python3 Analyzelogs.py -h'
+	2. Isto resolve o problema de direcionamento do python no windows. Já no linux o python 3.5.2 já vem como 'python3'.
