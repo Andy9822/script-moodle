@@ -31,8 +31,8 @@ except:
 # Constantes definidas
 # São as frases que vão ser filtradas do logo, fácil alteração
 # Só os nomes dos gráficos e do PDF que ficaram como antigos
-first_phrase == 'Discussão visualizada'
-second_phrase == 'Algum conteúdo foi publicado'
+first_phrase = 'Discussão visualizada'
+second_phrase = 'Algum conteúdo foi publicado'
 
 def xlread(arq_xls):
     # Abre o arquivo
