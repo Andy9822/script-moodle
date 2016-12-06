@@ -6,10 +6,6 @@ except:
     sys.exit()
 try:
     import xlrd
-    from sys import argv
-    from datetime import datetime
-    from datetime import date
-    from operator import itemgetter
     import matplotlib.pyplot as plt
     import numpy as np
     import matplotlib.ticker as ticker
@@ -22,10 +18,14 @@ try:
     from reportlab.lib.pagesizes import letter, inch
     from reportlab.platypus import Image, Paragraph, SimpleDocTemplate, Table
     from reportlab.lib.styles import getSampleStyleSheet
-    import argparse as p
 except:
     print ("Some module can't be found, extract the 'imports.rar' in the same folder")
     sys.exit()
+import argparse as p
+from sys import argv
+from datetime import datetime
+from datetime import date
+from operator import itemgetter
 
 
 # Constantes definidas
@@ -440,7 +440,6 @@ class Aluno:
         self.firstPost =  firstPost
 #--------------------------DEVELOPMENT----------------------------------#
 def development(option,namesFile_,file_,startingDate,finalDate):
-
     # Coloca a lista de estudantes e as semanas/post nessas variaveis
     studentslist,weeklyPostsList = loadErikaLog(file_,namesFile_,startingDate,finalDate)
     # Seleciona quem participa, não participa, só le e quem le e escreve (com números/genérico)
@@ -465,18 +464,18 @@ def development(option,namesFile_,file_,startingDate,finalDate):
         create_and_plot_lines(weeklyPostsList)
 
 # Cria os argumentos que o programa vai receber, e faz as flags, requires e os helps
-p = p.ArgumentParser(description="""Script Analyze Logs Moodle INF UFRGS""")
-p.add_argument('students', help = 'File that contains the students names in EXCEL')
-p.add_argument('log',help = 'File that contains the log in EXCEL')
-p.add_argument('option',help ='''# # 1 -  Quantos alunos enviaram mensagem e não enviaram.
+commands = p.ArgumentParser(description="""Script Analyze Logs Moodle INF UFRGS""")
+commands.add_argument('students', help = 'File that contains the students names in EXCEL')
+commands.add_argument('log',help = 'File that contains the log in EXCEL')
+commands.add_argument('option',help ='''# # 1 -  Quantos alunos enviaram mensagem e não enviaram.
 # # 2 -  Para cada aluno que participou, quantas vezes participou?
 # # 3 -  Estatisticas de cada aluno (saida em pdf).
 # # 4 -  Número de perguntas por semana.
 # # 9 -  Todos as operações acima sendo mostradas uma após a outra sem gerar arquivo de saida.
 # # 10 - Todos as operações acima sendo mostradas uma após a outra gerando arquivo de saida.''')
-p.add_argument('-f','--firstdate',help='First date dd/mm/aaaa',required=False)
-p.add_argument('-l','--lastdate',help='Last date dd/mm/aaaa',required=False)
-args = p.parse_args()
+commands.add_argument('-f','--firstdate',help='First date dd/mm/aaaa',required=False)
+commands.add_argument('-l','--lastdate',help='Last date dd/mm/aaaa',required=False)
+args = commands.parse_args()
 
 # Consistência na hora de receber os parâmetros
 def cmd_consistency(args):
