@@ -322,9 +322,11 @@ def manageExistantStudent(studentsList,excelName,excelPhrase,inicial,final,data_
             #Se foi passado um intervalo de tempo e aluno criou um post, precisa ser atualizada lista de posts por semana
             if  newMessage:
                 weeklyPostsList = updateWeeklyPosts(weeklyPostsList,data_splited[0],inicial,final)
-            #Se data eh menor que a de antes, pega essa nova
-            if convert_to_datetime(data_splited[0]) < x.firstPost:
-                x.firstPost = convert_to_datetime(data_splited[0])
+            # Verifica se foi alguma ação pre selecionada
+            if excelPhrase == 'Discussão visualizada' or excelPhrase == 'Algum conteúdo foi publicado':
+                #Se data eh menor que a de antes, atualiza a atual
+                if convert_to_datetime(data_splited[0]) < x.firstPost:
+                    x.firstPost = convert_to_datetime(data_splited[0])
     return studentsList,weeklyPostsList
 
 def updateWeeklyPosts(weeklyPostsList,date_str,inicial,final):
@@ -381,6 +383,7 @@ def loadErikaLog(file_,studentsNamesFile,inicial_str,final_str):
         for linha in xlread(file_):
             if linha[1] != "Nome completo":
                 data_splited=(linha[0].split(' '))
+                # Verifica se o nome está na lista de estudante e se a data está entre o inicio e o final
                 if linha[1] in studentsNameList and final_str >= (convert_to_datetime(data_splited[0])) and inicial_str <= (convert_to_datetime(data_splited[0])):
                 #Testa se pessoa da vez eh um estudante. Se for, analiza se ja foi visto antes ou primeira aparição e se precisa ser tratado
                     if not name_in_Aluno(studentsList,linha[1]):
