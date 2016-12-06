@@ -26,6 +26,14 @@ try:
 except:
     print ("Some module can't be found, extract the 'imports.rar' in the same folder")
     sys.exit()
+
+
+# Constantes definidas
+# São as frases que vão ser filtradas do logo, fácil alteração
+# Só os nomes dos gráficos e do PDF que ficaram como antigos
+first_phrase == 'Discussão visualizada'
+second_phrase == 'Algum conteúdo foi publicado'
+
 def xlread(arq_xls):
     # Abre o arquivo
     xls = xlrd.open_workbook(arq_xls)
@@ -206,9 +214,9 @@ def analyze_interaction(phrase,date):
     #Quando um novo aluno aparece, se analiza essa nova interacao do novo aluno
     participa = 0
     mensagem = 0
-    if phrase == "Discussão visualizada":
+    if phrase == first_phrase:
         participa = 1
-    elif phrase == "Algum conteúdo foi publicado" :
+    elif phrase == second_phrase :
         participa = 1
         mensagem = 1
     if participa == 0 and mensagem == 0:
@@ -219,16 +227,16 @@ def update_interaction(phrase):
     #Para alunos que ja interagiram, apenas se atualiza esse novo tipo de interacao
     participa = 0
     mensagem = 0
-    if phrase == "Discussão visualizada":
+    if phrase == first_phrase:
         participa = 1
-    elif phrase == "Algum conteúdo foi publicado" :
+    elif phrase == second_phrase:
         participa = 1
         mensagem = 1
     return mensagem,participa
 
 def amount_interactions_pieChart(Alunos):
     # Dado uma lista de Alunos retorna quantos participaram e quantos nã
-    #Tambem quantos só visualizaram posts e quantos mandaram perguntas tb
+    # Tambem quantos só visualizaram posts e quantos mandaram perguntas tb
     participate = 0
     nonParticipate = 0
     justReaders = 0
@@ -242,7 +250,6 @@ def amount_interactions_pieChart(Alunos):
             participate +=1
         else:
             nonParticipate +=1
-
     return participate,nonParticipate,justReaders,readWriters
 
 def amount_messages(Alunos):
@@ -323,7 +330,7 @@ def manageExistantStudent(studentsList,excelName,excelPhrase,inicial,final,data_
             if  newMessage:
                 weeklyPostsList = updateWeeklyPosts(weeklyPostsList,data_splited[0],inicial,final)
             # Verifica se foi alguma ação pre selecionada
-            if excelPhrase == 'Discussão visualizada' or excelPhrase == 'Algum conteúdo foi publicado':
+            if excelPhrase == first_phrase or excelPhrase == second_phrase:
                 #Se data eh menor que a de antes, atualiza a atual
                 if convert_to_datetime(data_splited[0]) < x.firstPost:
                     x.firstPost = convert_to_datetime(data_splited[0])
