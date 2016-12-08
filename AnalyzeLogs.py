@@ -1,9 +1,11 @@
 # encoding: utf-8
+import sys
+import argparse
 try:
     from tkinter import *
 except:
     print ("Module 'tkinter' not found, you may have python 2.7 AND 3.5, please read the instructions")
-    sys.exit()
+    sys.exit(0)
 try:
     import xlrd
     import matplotlib.pyplot as plt
@@ -19,10 +21,8 @@ try:
     from reportlab.platypus import Image, Paragraph, SimpleDocTemplate, Table
     from reportlab.lib.styles import getSampleStyleSheet
 except:
-    print ("Some module can't be found, extract the 'imports.rar' in the same folder")
-    sys.exit()
-import argparse as p
-from sys import argv
+    print ("Some modules can't be found, extract the 'imports.rar' in the AnalyzeLogs folder")
+    sys.exit(0)
 from datetime import datetime
 from datetime import date
 from operator import itemgetter
@@ -464,7 +464,7 @@ def development(option,namesFile_,file_,startingDate,finalDate):
         create_and_plot_lines(weeklyPostsList)
 
 # Cria os argumentos que o programa vai receber, e faz as flags, requires e os helps
-commands = p.ArgumentParser(description="""Script Analyze Logs Moodle INF UFRGS""")
+commands = argparse.ArgumentParser(description="""Script Analyze Logs Moodle INF UFRGS""")
 commands.add_argument('students', help = 'File that contains the students names in EXCEL')
 commands.add_argument('log',help = 'File that contains the log in EXCEL')
 commands.add_argument('option',help ='''# # 1 -  Quantos alunos enviaram mensagem e não enviaram.
@@ -520,6 +520,8 @@ def cmd_consistency(args):
         print("Some date is in wrong format, please format is DD/MM/AAAA")
         sys.exit()
     return first,last
+
+	
 
 firstday,lastday = cmd_consistency(args)
 

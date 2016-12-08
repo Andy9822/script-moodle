@@ -2,7 +2,7 @@
 # no fórum de Dúvidas da respectiva cadeira no Moodle
 
 
-# Instalação
+# Instalação 
 
 1. Acessar https://www.python.org/downloads/ e baixar a versão python 3.5.x (cuidar para não baixar um Python 2.x.x, e baixar a última versão em destaque).
 2. Não esquecer de marcar a opção "ADD PYTHON TO PATH" na primeira janela da instalação.
@@ -15,16 +15,18 @@
 		Obs: Se faltar algum module extra, só digitar pip3 install "nome_do_module".
 4. Abrir o CMD e trocar o diretório para a pasta em que se encontra o arquivo "AnalyzeLogs.py" e executar conforme abaixo.
 
+
+- *****Se houver alguma instalação antiga do Python na mesma máquina além do 3.5.x atual olhe o final desse arquivo para mais informações *****
+
+
+
 # Utilização
 
-- Para mudar o diretório no CMD há 2 opções
-	1. Abrir a pasta onde se encontra "Analyzelogs.py" pressionar SHIFT e botão direito do mouse e selecionar "Abrir janela de comando aqui"
-	2. Abrir o CMD e digitar o seguinte comando: "cd (local da pasta)" Ex: cd c:\users\user\documents\script-moodle\.
 - O script deve ser chamado desde a linha de comando passando 3 ou 5 pârametros , além do nome do arquivo. 
-- Os 2 pârametros adicionais servem para delimitar uma data na análise dos logs passados. Caso não sejam passados esses.
+- Os 2 pârametros adicionais servem para delimitar uma data na análise dos logs passados. Caso não sejam passados esses
 - 2 pârametros, se usará o log inteiro como referência.
 
-- As datas devem ser passadas como um argumento só e na forma dd/mm/ano.
+- Cada data deve ser passada como um argumento na forma dd/mm/ano.
 - Deve ser passado o nome do arquivo contendo o nome dos alunos e o nome do arquivo contendo os logs nesta mesma ordem e como pârametros separados.
 - A operação deve ser passadas como um número e pode ser escolhida dentre as seguintes:
 
@@ -36,7 +38,7 @@
 -  10 - Todos as operações acima sendo mostradas uma após a outra gerando arquivo de saida.
 
 
-- O protótipo da chamada do script é:
+-  O protótipo da chamada do script é:
 -  <Nome_Do_Programa> <Nome_Arquivo_Alunos> <Nome_Contendo_Logs> <Num_Operação>
 -  ou no caso de querer delimitar data:
 -  <Nome_Do_Programa> <Nome_Arquivo_Alunos> <Nome_Contendo_Logs> <Num_Operação> -f <data_inicial> -l <data_final>
@@ -49,6 +51,11 @@
 
 
 - Os gráficos podem ser salvos na própria janela gerada, no menú inferior tem a opção à extrema direita "Save the figure".
+
+- Para mudar o diretório no CMD há 2 opções
+	1. Abrir a pasta onde se encontra "Analyzelogs.py" pressionar SHIFT e botão direito do mouse e selecionar "Abrir janela de comando aqui"
+	2. Abrir o CMD e digitar o seguinte comando: "cd (local da pasta)" Ex: cd c:\users\user\documents\script-moodle\.
+
 
 
 # Entradas
@@ -73,7 +80,7 @@
 ---------------------- IMPORTANTE --------------------------
 ############################################################
 
-Caso tenha feito download do import.rar é necessário que as seguintes pastas/arquivos se encontrem no mesmo diretório:
+Caso tenha feito download do import.rar é necessário que as seguintes pastas/arquivos se encontrem no mesmo diretório do script:
 
 	matplotlib
 	reportlab
@@ -90,12 +97,24 @@ Caso tenha feito download do import.rar é necessário que as seguintes pastas/arq
 
 Pois o script "AnalyzeLogs" importa essas pastas para o programa.
 
-# Erros
+
+# **** Quando há mais de uma versão do Python instalada no mesmo computador ****
 
 - "tkinter cant be found"
-	1. Este erro ocorre porque o scrip não consegue diferenciar qual python usar (2.7, ou 3.5) caso você tenha instalados esses dois,
+
+1. Este erro ocorre porque o script não consegue diferenciar qual python usar (2.7, ou 3.5) caso você tenha instalados esses dois,
 para resolver há 2 opções:
-		1.1. Desinstalar ambos pythons e instalar somente o python 3.5.2
-		1.2. Ir para a pasta do python 3.5.2 (geralmente é: C:\Users\User\AppData\Local\Programs\Python\Python35-32, lembre de trocar User pelo o seu usuario).
-renomear o aplicativo 'python' para 'python3'. Pronto, mas quando for chamar o script terá que utilizar com 'python3' na frente. Ex: 'python3 Analyzelogs.py -h'
-	2. Isto resolve o problema de direcionamento do python no windows. Já no linux o python 3.5.2 já vem como 'python3'.
+
+1.1 Ir para a pasta do python 3.5.2 (geralmente é: C:\Users\User\AppData\Local\Programs\Python\Python35-32, lembre de trocar User pelo o seu usuario).
+renomear o aplicativo 'python' para 'python3'. Quando for chamar o script terá que utilizar com 'python3' na frente. Ex: 'python3 Analyzelogs.py -h'
+Isto resolve o problema de direcionamento do python no windows. Já no linux o python 3.5.2 já vem como 'python3'.
+
+1.2 Adicionar o caminho do Python.py da pasta de instalaçao do Python35-32 como um primeiro parametro a mais da chamada do script. O mesmo passo que a opção acima, porém ao invés de renomear 
+se aperta com Shift + Botão direito do mouse sobre o python.py e se escolhe a opçao "Copiar como caminho". Feito isso, se cola esse caminho no CMD e se adiciona a chamada normal do script
+Exemplo: "C:\Program Files (x86)\Python35-32\python.exe" AnalyzeLogs.py <arquivo_alunos> <arquivo_log> <opçao>
+
+
+
+
+
+
