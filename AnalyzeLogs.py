@@ -70,19 +70,19 @@ def make_autopct(values):
         return '{p:.2f}%  ({v:d})'.format(p=pct,v=val)
     return my_autopct
 
-def pieChart(notSent,sent,see,write_see):
+def pie_chart(not_sent,sent,see,write_see):
     # Data to plot
     explode1 = (0,0)
     explode2 = explode1
 
     colors = ['lightskyblue', 'lightcoral']
-    sizes = [sent, notSent]
+    sizes = [sent, not_sent]
     colors2 = ['gold', 'yellowgreen']
     sizes2 = [see, write_see]
 
-    if  sent>notSent:
+    if  sent>not_sent:
         explode1 = (0.1, 0)
-    elif notSent>sent:      # explode biggest slice
+    elif not_sent>sent:      # explode biggest slice
         explode1 = (0, 0.1)
 
     if  see>write_see:
@@ -116,18 +116,18 @@ def create_and_plot_bar(log):
     plotgraph_bar(people,number)
     return dic
 
-def create_and_plot_lines(weeklyPostsList):
+def create_and_plot_lines(weekly_posts_list):
     # Plota o gráfico em linhas (bom para saber por dias)
     # Inverte as listas para ficar em ordem crescente
-    semanas=[]
-    # Cria um array de strings com os NUMEROS DAS SEMANAS
-    for x in range(len(weeklyPostsList)):
-        semanas.append("Semana "+str(x+1))
+    weeks=[]
+    # Cria um array de strings com os NUMEROS DAS weeks
+    for x in range(len(weekly_posts_list)):
+        weeks.append("Semana "+str(x+1))
     # Seta o X e Y para arrays de numeros
-    x = np.array(range(len(weeklyPostsList)))
-    y = np.array(weeklyPostsList)
-    # Pega as semanas para colocar em baixo
-    my_xticks = semanas
+    x = np.array(range(len(weekly_posts_list)))
+    y = np.array(weekly_posts_list)
+    # Pega as weeks para colocar em baixo
+    my_xticks = weeks
     #plt.figure(figsize=(30,10))
     # esse 1.0 é a distancia entre eles, se aumentar não vai plotar todos
     plt.xticks(np.arange(min(x), max(x)+1,1.0),my_xticks, rotation=40, size = 13)
@@ -140,57 +140,13 @@ def create_and_plot_lines(weeklyPostsList):
         plt.plot(x,y,label = 'Everyone')
         plt.legend()
         plt.show()
-# FUNÇÃO COMENTADO, FAZ VARIOS GRAFOS
-"""
-    else:
-        # Se tiver algo no names
-        people=[]
-        # Vai fazer uma lista de listas com Pessoa[dias,numeros]
-        for x in names:
-            numbers=[]
-            days=[]
-            for y in log:
-                if not log[y].date in days:
-                    # Faz uma lista de numeros acessados naquele dia pelo "x"
-                    numbers.append(how_visua_day_name(log,log[y].date,x))
-                    # Faz uma lista de datas
-                    days.append(log[y].date)
-            # Juntas as duas listas em 1 pessoa
-            people.append([days,numbers])
-            # People [x][0] = Dates People [x][1] = Acessos no dia
-        for i in range(len(names)):
-            # Vai plotar um gráfico para cada pessoa do names
-            numbers=[]
-            days=[]
-            days = people[i][0]
-            numbers = people[i][1]
-            days.reverse()
-            numbers.reverse()
-            # Seta o X e Y para arrays de numeros
-            x = np.array(range(len(days)))
-            y = np.array(numbers)
-            # Pega as datas para colocar em baixo
-            my_xticks = days
-            #plt.figure(figsize=(30,10))
-            my_yticks = names
-            plt.xticks(np.arange(min(x), max(x)+1,1.0),my_xticks, rotation=290, size = 13)
-            plt.ylabel('Número de acessos')
-            # Titulo do grafico
-            plt.title("Gráfico separado por pessoas")
-            # Colore o gráfico
-            with plt.style.context('fivethirtyeight'):
-                # esse "=" é a legenda da pessoa
-                plt.plot(x,y,label = names[i])
-        # Vai mostrar o que foi plotado
-        plt.legend()
-        plt.show()"""
 
-def plotgraph_bar(Alunos):
+def plotgraph_bar(students):
     number = []
     people = []
-    for x in Alunos:
-        number.append(x.numParticipations)
-        people.append(x.personName[:15])
+    for student in students:
+        number.append(student.num_participations)
+        people.append(student.person_name[:15])
     plt.rcdefaults()
     # Peoples e Number já estão atualizados e ordenados
     y_pos = np.arange(len(people))
@@ -212,70 +168,70 @@ def convert_to_datetime(date_string):
 
 def analyze_interaction(phrase,date):
     #Quando um novo aluno aparece, se analiza essa nova interacao do novo aluno
-    participa = 0
-    mensagem = 0
+    participate = 0
+    message = 0
     if phrase == first_phrase:
-        participa = 1
+        participate = 1
     elif phrase == second_phrase :
-        participa = 1
-        mensagem = 1
-    if participa == 0 and mensagem == 0:
+        participate = 1
+        message = 1
+    if participate == 0 and message == 0:
         date = ["01/01/9999"]
-    return mensagem,participa,date
+    return message,participate,date
 
 def update_interaction(phrase):
     #Para alunos que ja interagiram, apenas se atualiza esse novo tipo de interacao
-    participa = 0
-    mensagem = 0
+    participate = 0
+    message = 0
     if phrase == first_phrase:
-        participa = 1
+        participate = 1
     elif phrase == second_phrase:
-        participa = 1
-        mensagem = 1
-    return mensagem,participa
+        participate = 1
+        message = 1
+    return message,participate
 
-def amount_interactions_pieChart(Alunos):
+def amount_interactions_pie_chart(students):
     # Dado uma lista de Alunos retorna quantos participaram e quantos nã
     # Tambem quantos só visualizaram posts e quantos mandaram perguntas tb
     participate = 0
-    nonParticipate = 0
-    justReaders = 0
-    readWriters = 0
-    for x in Alunos:
-        if x.numMessages > 0 and x.numParticipations > 0:
+    non_participate = 0
+    just_readers = 0
+    read_writers = 0
+    for x in students:
+        if x.num_messages > 0 and x.num_participations > 0:
             participate += 1
-            readWriters +=1
-        elif x.numParticipations > 0:
-            justReaders +=1
+            read_writers +=1
+        elif x.num_participations > 0:
+            just_readers +=1
             participate +=1
         else:
-            nonParticipate +=1
-    return participate,nonParticipate,justReaders,readWriters
+            non_participate +=1
+    return participate,non_participate,just_readers,read_writers
 
-def amount_messages(Alunos):
+def amount_messages(students):
     # Dado uma lista de Alunos retorna quantos enviaram mensagens
     # E quantos não enviaram
     sent = 0
     not_sent = 0
-    for x in Alunos:
-        if x.numMessages > 0:
+    for x in students:
+        if x.num_messages > 0:
             sent += 1
-    not_sent = len(Alunos) - sent
+    not_sent = len(students) - sent
     return sent,not_sent
 
-def which_participate(Alunos):
+def which_participate(students):
     # Devolve uma lista de Alunos que tiveram pelo menos UMA participação
     participate = []
     not_participate = []
-    for x in Alunos:
-        if x.numParticipations > 0:
-            participate.append(x)
+    for student in students:
+        if student.num_participations > 0:
+            participate.append(student)
         else:
-            not_participate.append(x)
-    participate.sort(key=lambda x: x.numParticipations, reverse=False)
+            not_participate.append(student)
+    participate.sort(key=lambda x: student.num_participations, reverse=False)
     return participate,not_participate
 
-def make_matriz(Alunos):
+def make_matriz(students):
     # Recebe uma lista de Alunos e devolve uma matriz com as infs relevantes desses alunos
     matriz=[]
     styleSheet = getSampleStyleSheet()
@@ -288,14 +244,14 @@ def make_matriz(Alunos):
     P4 = Paragraph('''
         <para align=center spaceb=3><b>Primeiro post/Participou</b></para>''',styleSheet["BodyText"])
     matriz.append([P1,P2,P3,P4])
-    Alunos.sort(key=lambda x: x.numParticipations, reverse=True)
-    Alunos.sort(key=lambda x: x.numMessages, reverse=True)
-    for student in Alunos:
-        if (student.firstPost > convert_to_datetime("01/01/9998")):
+    students.sort(key=lambda x: x.num_participations, reverse=True)
+    students.sort(key=lambda x: x.num_messages, reverse=True)
+    for student in students:
+        if (student.first_post > convert_to_datetime("01/01/9998")):
             firstdate = "Não participou"
         else:
-            firstdate = student.firstPost
-        matriz.append([student.personName,student.numMessages,student.numParticipations,firstdate])
+            firstdate = student.first_post
+        matriz.append([student.person_name,student.num_messages,student.num_participations,firstdate])
     return matriz
 
 def names_excel(file_):
@@ -303,107 +259,107 @@ def names_excel(file_):
     # Retorna uma lista desses nomes
     # Inicia a lista
     names = []
-    for linha in xlread(file_):
-        if not linha[2] in names:
-            names.append(linha[2])
+    for row in xlread(file_):
+        if not row[2] in names:
+            names.append(row[2])
     return names
 
-def name_in_Aluno(Alunos,name):
+def name_in_student(students,name):
     # Recebe uma lista de hero e um nome, retorna se essa nome esta na lista
-    for x in Alunos:
-        if x.personName == name:
+    for student in students:
+        if student.person_name == name:
             return True
     return False
 
-def appendGhostStudents(studentsNameList,studentsList):
-    for name in studentsNameList:
-        if not name_in_Aluno(studentsList,name):
-            studentsList.append(Aluno(name,0,0,convert_to_datetime("01/01/9999")))
+def append_ghost_students(students_name_list,students_list):
+    for name in students_name_list:
+        if not name_in_student(students_list,name):
+            students_list.append(Aluno(name,0,0,convert_to_datetime("01/01/9999")))
 
-def manageExistantStudent(studentsList,excelName,excelPhrase,inicial,final,data_splited,weeklyPostsList):
-    for x in studentsList:
-        if x.personName == excelName:
-            newMessage,newParticipations = update_interaction(excelPhrase)
-            x.numMessages += newMessage
-            x.numParticipations += newParticipations
+def manage_existant_student(students_list,excel_name,excel_phrase,first_date,last_date,data_splited,weekly_posts_list):
+    for student in students_list:
+        if student.person_name == excel_name:
+            newMessage,newParticipations = update_interaction(excel_phrase)
+            student.num_messages += newMessage
+            student.num_participations += newParticipations
             #Se foi passado um intervalo de tempo e aluno criou um post, precisa ser atualizada lista de posts por semana
             if  newMessage:
-                weeklyPostsList = updateWeeklyPosts(weeklyPostsList,data_splited[0],inicial,final)
+                weekly_posts_list = update_weekly_posts(weekly_posts_list,data_splited[0],first_date,last_date)
             # Verifica se foi alguma ação pre selecionada
-            if excelPhrase == first_phrase or excelPhrase == second_phrase:
+            if excel_phrase == first_phrase or excel_phrase == second_phrase:
                 #Se data eh menor que a de antes, atualiza a atual
-                if convert_to_datetime(data_splited[0]) < x.firstPost:
-                    x.firstPost = convert_to_datetime(data_splited[0])
-    return studentsList,weeklyPostsList
+                if convert_to_datetime(data_splited[0]) < student.first_post:
+                    student.first_post = convert_to_datetime(data_splited[0])
+    return students_list,weekly_posts_list
 
-def updateWeeklyPosts(weeklyPostsList,date_str,inicial,final):
+def update_weekly_posts(weekly_posts_list,date_str,start,end):
     # Recebe a data do post e calcula em qual semana foi postado
     # para preencher na semana correspondente na lista
     date = convert_to_datetime(date_str)
     date = date.isocalendar()[1]
-    date = date - inicial
-    if date>= 0 and date <= (final-inicial):
-        weeklyPostsList[date] += 1
-    return weeklyPostsList
+    date = date - start
+    if date>= 0 and date <= (end-start):
+        weekly_posts_list[date] += 1
+    return weekly_posts_list
 
-def carregaIntervalo(file_):
-    final = '01/01/0001'
-    inicial = '01/01/9999'
-    for linha in xlread(file_):
-        if linha[1] != "Nome completo":
-            data_splited=(linha[0].split(' '))
-            if convert_to_datetime(final) < convert_to_datetime(data_splited[0]):
-                final = data_splited[0]
-            if convert_to_datetime(inicial) > convert_to_datetime(data_splited[0]):
-                inicial = data_splited[0]
-    return inicial,final
+def load_date_range(file_):
+    last_date = '01/01/0001'
+    first_date = '01/01/9999'
+    for row in xlread(file_):
+        if row[1] != "Nome completo":
+            data_splited=(row[0].split(' '))
+            if convert_to_datetime(last_date) < convert_to_datetime(data_splited[0]):
+                last_date = data_splited[0]
+            if convert_to_datetime(first_date) > convert_to_datetime(data_splited[0]):
+                first_date = data_splited[0]
+    return first_date,last_date
 
-def create_weeklyPostsList(inicial, final):
+def create_weekly_posts_list(first_date, last_date):
     # Calcula intervalo de semanas e cria
     # preenche uma lista desses n elementos com zero (0)
-    weeklyPostsList = []
-    inicial = inicial.isocalendar()[1]
-    final = final.isocalendar()[1]
-    amountWeeks = final - inicial
+    weekly_posts_list = []
+    first_date = first_date.isocalendar()[1]
+    last_date = last_date.isocalendar()[1]
+    amount_weeks = last_date - first_date
     # Acrescenta 1 no amountweek para contar a PROPRIA semana
-    for x in range(amountWeeks+1):
-        weeklyPostsList.append(0)
-    return weeklyPostsList,inicial,final
+    for x in range(amount_weeks+1):
+        weekly_posts_list.append(0)
+    return weekly_posts_list,first_date,last_date
 
-def loadErikaLog(file_,studentsNamesFile,inicial_str,final_str):
+def load_log(file_,students_names_file,first_date,last_date):
     # Recebe uma lista com nomes dos alunos para filtrar o log gerado pelo Moodle e pode receber um intervalo definido de datas para a consulta das infos
     # Devolve uma lista com os estudantes e suas infos das participações no forum de duvidas e uma lista com o numero de postagens por semana
-    studentsList = []
-    weeklyPostsList = []
-    studentsNameList = names_excel(studentsNamesFile)
+    students_list = []
+    weekly_posts_list = []
+    students_name_list = names_excel(students_names_file)
     # Converte as datas para DateTime
-    if not inicial_str:
-        inicial_str,final_str = carregaIntervalo(file_)
-    inicial_str = convert_to_datetime(inicial_str)
-    final_str = convert_to_datetime(final_str)
+    if not first_date:
+        first_date,last_date = load_date_range(file_)
+    first_date = convert_to_datetime(first_date)
+    last_date = convert_to_datetime(last_date)
     if not file_:
-        return studentsList,weeklyPostsList
+        return students_list,weekly_posts_list
     else:
         #Se foi passado um intervalo de tempo, precisa ser criada lista de posts por semana
-        if inicial_str:
-            weeklyPostsList, inicial_week,final_week =  create_weeklyPostsList(inicial_str,final_str)
+        if first_date:
+            weekly_posts_list, inicial_week,final_week =  create_weekly_posts_list(first_date,last_date)
         for linha in xlread(file_):
             if linha[1] != "Nome completo":
                 data_splited=(linha[0].split(' '))
                 # Verifica se o nome está na lista de estudante e se a data está entre o inicio e o final
-                if linha[1] in studentsNameList and final_str >= (convert_to_datetime(data_splited[0])) and inicial_str <= (convert_to_datetime(data_splited[0])):
+                if linha[1] in students_name_list and last_date >= (convert_to_datetime(data_splited[0])) and first_date <= (convert_to_datetime(data_splited[0])):
                 #Testa se pessoa da vez eh um estudante. Se for, analiza se ja foi visto antes ou primeira aparição e se precisa ser tratado
-                    if not name_in_Aluno(studentsList,linha[1]):
+                    if not name_in_student(students_list,linha[1]):
                         newMessages,newParticipations,data_splited = analyze_interaction(linha[5],data_splited)
                         if  newMessages:
-                            weeklyPostsList = updateWeeklyPosts(weeklyPostsList,data_splited[0],inicial_week,final_week)
-                        studentsList.append(Aluno(linha[1],newMessages,newParticipations,convert_to_datetime(data_splited[0])))
+                            weekly_posts_list = update_weekly_posts(weekly_posts_list,data_splited[0],inicial_week,final_week)
+                        students_list.append(Aluno(linha[1],newMessages,newParticipations,convert_to_datetime(data_splited[0])))
                     else:
-                        studentsList,weeklyPostsList = manageExistantStudent(studentsList,linha[1],linha[5],inicial_week,final_week,data_splited,weeklyPostsList)
+                        students_list,weekly_posts_list = manage_existant_student(students_list,linha[1],linha[5],inicial_week,final_week,data_splited,weekly_posts_list)
 
-        appendGhostStudents(studentsNameList,studentsList)
+        append_ghost_students(students_name_list,students_list)
         print("Done")
-        return studentsList,weeklyPostsList
+        return students_list,weekly_posts_list
 
 def is_date(string):
     # Recebe um string e verifica se está no formato date compatível
@@ -416,7 +372,7 @@ def is_date(string):
     else:
         False
 
-def Make_PDF(matriz):
+def make_pdf(matriz):
     doc = SimpleDocTemplate("alunos_moodle.pdf", pagesize=letter)
     # container for the 'Flowable' objects
     elements = []
@@ -433,35 +389,35 @@ def Make_PDF(matriz):
     print("Foi gerado alunos_moodle.pdf")
 
 class Aluno:
-    def __init__(self,personName,numMessages,numParticipations,firstPost):
-        self.personName = personName
-        self.numMessages = numMessages
-        self.numParticipations = numParticipations
-        self.firstPost =  firstPost
+    def __init__(self,person_name,num_messages,num_participations,first_post):
+        self.person_name = person_name
+        self.num_messages = num_messages
+        self.num_participations = num_participations
+        self.first_post =  first_post
 #--------------------------DEVELOPMENT----------------------------------#
-def development(option,namesFile_,file_,startingDate,finalDate):
+def development(option,names_file_,file_,starting_date,final_date):
     # Coloca a lista de estudantes e as semanas/post nessas variaveis
-    studentslist,weeklyPostsList = loadErikaLog(file_,namesFile_,startingDate,finalDate)
+    students_list,weekly_posts_list = load_log(file_,names_file_,starting_date,final_date)
     # Seleciona quem participa, não participa, só le e quem le e escreve (com números/genérico)
-    Yesparticipate,nonParticipate,justReaders,readWriters = amount_interactions_pieChart(studentslist)
+    participate,non_participate,just_readers,read_writers = amount_interactions_pie_chart(students_list)
     # Novamente coloca quem participa e quem não participa (exato, quem fez cada)
-    listParticipants,listAbsents=which_participate(studentslist)
+    list_participants,list_absents=which_participate(students_list)
     if option == '1': # Se for 1 a opção, plota o gráfico de pizza
-        pieChart(nonParticipate,Yesparticipate,justReaders,readWriters)
+        pie_chart(non_participate,participate,just_readers,read_writers)
     elif option == '2': # Se for 2 plota o gráfico de barras
-        plotgraph_bar(listParticipants)
+        plotgraph_bar(list_participants)
     elif option == '3': # Se for 3 gera o pdf
-        matriz=make_matriz(studentslist)
-        Make_PDF(matriz)
+        matriz=make_matriz(students_list)
+        make_pdf(matriz)
     elif option == '4': # Se for 4 faz o gráfico de linhas
-        create_and_plot_lines(weeklyPostsList)
+        create_and_plot_lines(weekly_posts_list)
     elif option == '10' or option == '9': # Se for 9 só vai fazer a pizza e as barras
-        pieChart(nonParticipate,Yesparticipate,justReaders,readWriters)
-        plotgraph_bar(listParticipants)
+        pie_chart(non_participate,participate,just_readers,read_writers)
+        plotgraph_bar(list_participants)
         if option == '10':  # Se for 10 vai fazer tudo
-            matriz=make_matriz(studentslist)
-            Make_PDF(matriz)
-        create_and_plot_lines(weeklyPostsList)
+            matriz=make_matriz(students_list)
+            make_pdf(matriz)
+        create_and_plot_lines(weekly_posts_list)
 
 # Cria os argumentos que o programa vai receber, e faz as flags, requires e os helps
 commands = argparse.ArgumentParser(description="""Script Analyze Logs Moodle INF UFRGS""")
@@ -480,8 +436,8 @@ args = commands.parse_args()
 # Consistência na hora de receber os parâmetros
 def cmd_consistency(args):
     try:
-        for linha in xlread(args.students):
-            isinstance(linha[2],str)
+        for row in xlread(args.students):
+            isinstance(row[2],str)
             break # Sim esse break é feio, mas é só para não perder tempo rodando todo esse for
     except OSError:
         print('NAMES File not found, please be sure the file is in the same folder and select the excel NAMES file')
@@ -490,8 +446,8 @@ def cmd_consistency(args):
         print('NAMES Wrong File, please select the excel NAMES file')
         sys.exit()
     try:
-        for linha in xlread(args.log):
-            isinstance(linha[1],str)
+        for row in xlread(args.log):
+            isinstance(row[1],str)
             break
     except OSError:
         print('LOG File not found, please be sure the file is in the same folder and select the excel LOG file')
@@ -515,14 +471,14 @@ def cmd_consistency(args):
         print("Loading...")
         # Caso ele não tenha colocado data, pega a data mais recente do log e a mais distante
         # e retorna
-        first,last=carregaIntervalo(args.log)
+        first,last=load_date_range(args.log)
     except ValueError:
         print("Some date is in wrong format, please format is DD/MM/AAAA")
         sys.exit()
     return first,last
 
-	
 
-firstday,lastday = cmd_consistency(args)
 
-development(args.option,args.students,args.log,firstday,lastday)
+first_day,last_day = cmd_consistency(args)
+
+development(args.option,args.students,args.log,first_day,last_day)
