@@ -461,8 +461,10 @@ def cmd_consistency(args):
         print ("Not a valid option, type -h for help")
         sys.exit()
     try:
-        first=convert_to_datetime(args.firstdate)
-        last=convert_to_datetime(args.lastdate)
+        first = convert_to_datetime(args.firstdate)
+        last = convert_to_datetime(args.lastdate)
+        first = args.firstdate
+        last = args.lastdate
     except TypeError:
         print("Input date is none. Everything in the log will be processed")
         print("Loading...")
