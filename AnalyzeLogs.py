@@ -228,7 +228,7 @@ def which_participate(students):
             participate.append(student)
         else:
             not_participate.append(student)
-    participate.sort(key=lambda x: student.num_participations, reverse=False)
+    participate.sort(key=lambda student: student.num_participations, reverse=False)
     return participate,not_participate
 
 def make_matriz(students):
@@ -298,7 +298,7 @@ def update_weekly_posts(weekly_posts_list,date_str,start,end):
     date = convert_to_datetime(date_str)
     date = date.isocalendar()[1]
     date = date - start
-    if date>= 0 and date <= (end-start):
+    if date>= 0 and date <= abs(end-start):
         weekly_posts_list[date] += 1
     return weekly_posts_list
 
@@ -320,7 +320,7 @@ def create_weekly_posts_list(first_date, last_date):
     weekly_posts_list = []
     first_date = first_date.isocalendar()[1]
     last_date = last_date.isocalendar()[1]
-    amount_weeks = last_date - first_date
+    amount_weeks = abs(last_date - first_date)
     # Acrescenta 1 no amountweek para contar a PROPRIA semana
     for x in range(amount_weeks+1):
         weekly_posts_list.append(0)
@@ -332,17 +332,14 @@ def load_log(file_,students_names_file,first_date,last_date):
     students_list = []
     weekly_posts_list = []
     students_name_list = names_excel(students_names_file)
-    # Converte as datas para DateTime
-    if not first_date:
-        first_date,last_date = load_date_range(file_)
     first_date = convert_to_datetime(first_date)
     last_date = convert_to_datetime(last_date)
+
     if not file_:
         return students_list,weekly_posts_list
     else:
-        #Se foi passado um intervalo de tempo, precisa ser criada lista de posts por semana
-        if first_date:
-            weekly_posts_list, inicial_week,final_week =  create_weekly_posts_list(first_date,last_date)
+        # Cria as semanas
+        weekly_posts_list, inicial_week,final_week =  create_weekly_posts_list(first_date,last_date)
         for linha in xlread(file_):
             if linha[1] != "Nome completo":
                 data_splited=(linha[0].split(' '))
